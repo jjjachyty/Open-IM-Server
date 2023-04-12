@@ -19,6 +19,7 @@ import (
 var sms SMS
 
 func init() {
+	log.NewDebug("start>>>>>>>>>>>>>>")
 	var err error
 	if config.Config.Demo.AliSMSVerify.Enable {
 		sms, err = NewAliSMS()
