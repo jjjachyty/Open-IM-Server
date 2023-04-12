@@ -29,7 +29,7 @@ func main() {
 		r.GET("/metrics", promePkg.PrometheusHandler())
 	}
 
-	authRouterGroup := r.Group("/auth")
+	authRouterGroup := r.Group("/account")
 	{
 		authRouterGroup.POST("/code", register.SendVerificationCode)
 		authRouterGroup.POST("/verify", register.Verify)
