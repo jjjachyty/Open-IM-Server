@@ -36,11 +36,11 @@ func loggerInit(moduleName string) *Logger {
 	logger.SetLevel(logrus.Level(config.Config.Log.RemainLogLevel))
 	//Close std console output
 	//os.O_WRONLY | os.O_CREATE | os.O_APPEND
-	// src, err := os.OpenFile(os.DevNull, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	writer := bufio.NewWriter(os.Stdout)
+	src, err := os.OpenFile("../logs/out.log", os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		panic(err.Error())
+	}
+	writer := bufio.NewWriter(src)
 	logger.SetOutput(writer)
 	// logger.SetOutput(os.Stdout)
 	//Log Console Print Style Setting
