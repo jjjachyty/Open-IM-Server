@@ -794,11 +794,11 @@ demo:
   codeTTL: 60
   useSuperCode: true
   mail: #仅支持qq邮箱，具体操作参考 https://service.mail.qq.com/cgi-bin/help?subtype=1&id=28&no=1001256 必须修改
-    title:
-    senderMail:
-    senderAuthorizationCode:
-    smtpAddr:
-    smtpPort:     #需开放此端口 出口方向
+    title: 验证码
+    senderMail: push131.com@hotmail.com
+    senderAuthorizationCode: push131@2323~^
+    smtpAddr: smtp-mail.outlook.com
+    smtpPort: 587     #需开放此端口 出口方向
   testDepartMentID: 001
   imAPIURL: http://127.0.0.1:10002
   onboardProcess: false # 是否开启注册流程

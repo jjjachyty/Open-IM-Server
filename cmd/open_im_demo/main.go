@@ -20,7 +20,7 @@ import (
 
 func main() {
 	log.NewPrivateLog(constant.LogFileName)
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	f, _ := os.Create("../logs/api.log")
 	gin.DefaultWriter = io.MultiWriter(f)
 	r := gin.Default()
@@ -28,7 +28,8 @@ func main() {
 	if config.Config.Prometheus.Enable {
 		r.GET("/metrics", promePkg.PrometheusHandler())
 	}
-	authRouterGroup := r.Group("/demo")
+
+	authRouterGroup := r.Group("/auth")
 	{
 		authRouterGroup.POST("/code", register.SendVerificationCode)
 		authRouterGroup.POST("/verify", register.Verify)
@@ -36,15 +37,6 @@ func main() {
 		authRouterGroup.POST("/login", register.Login)
 		authRouterGroup.POST("/reset_password", register.ResetPassword)
 		authRouterGroup.POST("/check_login", register.CheckLoginLimit)
-	}
-	demoRouterGroup := r.Group("/auth")
-	{
-		demoRouterGroup.POST("/code", register.SendVerificationCode)
-		demoRouterGroup.POST("/verify", register.Verify)
-		demoRouterGroup.POST("/password", register.SetPassword)
-		demoRouterGroup.POST("/login", register.Login)
-		demoRouterGroup.POST("/reset_password", register.ResetPassword)
-		demoRouterGroup.POST("/check_login", register.CheckLoginLimit)
 	}
 
 	//deprecated
