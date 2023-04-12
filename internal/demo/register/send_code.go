@@ -117,7 +117,7 @@ func SendVerificationCode(c *gin.Context) {
 		m.SetBody(`text/html`, fmt.Sprintf("%d", code))
 		if err := gomail.NewDialer(config.Config.Demo.Mail.SmtpAddr, config.Config.Demo.Mail.SmtpPort, config.Config.Demo.Mail.SenderMail, config.Config.Demo.Mail.SenderAuthorizationCode).DialAndSend(m); err != nil {
 			log.Error(params.OperationID, "send mail error", account, err.Error())
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": ""})
+			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": err.Error()})
 			return
 		}
 	} else {
