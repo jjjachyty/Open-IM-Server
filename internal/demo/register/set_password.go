@@ -4,7 +4,6 @@ import (
 	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/constant"
-	"Open_IM/pkg/common/db"
 	imdb "Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	http2 "Open_IM/pkg/common/http"
 	"Open_IM/pkg/common/log"
@@ -66,33 +65,33 @@ func SetPassword(c *gin.Context) {
 	}
 	openIMRegisterReq := api.UserRegisterReq{}
 	var account string
-	var accountKey string
+	// var accountKey string
 	if params.Email != "" {
 		account = params.Email
 		openIMRegisterReq.Email = params.Email
-		accountKey = params.Email
+		// accountKey = params.Email
 	} else if params.PhoneNumber != "" {
 		account = params.PhoneNumber
 		openIMRegisterReq.PhoneNumber = params.PhoneNumber
-		accountKey = params.AreaCode + params.PhoneNumber
+		// accountKey = params.AreaCode + params.PhoneNumber
 	} else {
 		account = params.UserID
 	}
 	if params.Nickname == "" {
 		params.Nickname = account
 	}
-	if params.UserID == "" {
-		if (config.Config.Demo.UseSuperCode && params.VerificationCode != config.Config.Demo.SuperCode) || !config.Config.Demo.UseSuperCode {
-			accountKey += "_" + constant.VerificationCodeForRegisterSuffix
-			v, err := db.DB.GetAccountCode(accountKey)
-			if err != nil || v != params.VerificationCode {
-				log.NewError(params.OperationID, "password Verification code error", account, params.VerificationCode)
-				data := make(map[string]interface{})
-				data["PhoneNumber"] = account
-				c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code error!", "data": data})
-				return
-			}
-		}
+	if params.UserID == "" { //注册
+		// if (config.Config.Demo.UseSuperCode && params.VerificationCode != config.Config.Demo.SuperCode) || !config.Config.Demo.UseSuperCode {
+		// 	accountKey += "_" + constant.VerificationCodeForRegisterSuffix
+		// 	v, err := db.DB.GetAccountCode(accountKey)
+		// 	if err != nil || v != params.VerificationCode {
+		// 		log.NewError(params.OperationID, "password Verification code error", account, params.VerificationCode)
+		// 		data := make(map[string]interface{})
+		// 		data["PhoneNumber"] = account
+		// 		c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code error!", "data": data})
+		// 		return
+		// 	}
+		// }
 		if config.Config.Demo.NeedInvitationCode && params.InvitationCode != "" {
 			err := imdb.CheckInvitationCode(params.InvitationCode)
 			if err != nil {
