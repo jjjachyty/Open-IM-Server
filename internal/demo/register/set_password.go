@@ -66,12 +66,15 @@ func SetPassword(c *gin.Context) {
 	}
 	openIMRegisterReq := api.UserRegisterReq{}
 	var account string
+	var accountKey string
 	if params.Email != "" {
 		account = params.Email
 		openIMRegisterReq.Email = params.Email
+		accountKey = params.Email
 	} else if params.PhoneNumber != "" {
 		account = params.PhoneNumber
 		openIMRegisterReq.PhoneNumber = params.PhoneNumber
+		accountKey = params.AreaCode + params.PhoneNumber
 	} else {
 		account = params.UserID
 	}
@@ -80,7 +83,7 @@ func SetPassword(c *gin.Context) {
 	}
 	if params.UserID == "" {
 		if (config.Config.Demo.UseSuperCode && params.VerificationCode != config.Config.Demo.SuperCode) || !config.Config.Demo.UseSuperCode {
-			accountKey := params.AreaCode + account + "_" + constant.VerificationCodeForRegisterSuffix
+			accountKey += "_" + constant.VerificationCodeForRegisterSuffix
 			v, err := db.DB.GetAccountCode(accountKey)
 			if err != nil || v != params.VerificationCode {
 				log.NewError(params.OperationID, "password Verification code error", account, params.VerificationCode)
