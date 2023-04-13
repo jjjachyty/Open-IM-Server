@@ -187,6 +187,7 @@ func ParseTokenGetUserID(token string, operationID string) (error, string) {
 }
 
 func ParseToken(tokensString, operationID string) (claims *Claims, err error) {
+	log.NewInfo(operationID, "ParseToken in :", ParseToken)
 	claims, err = GetClaimFromToken(tokensString)
 	if err != nil {
 		return nil, utils.Wrap(err, "")
@@ -237,7 +238,7 @@ func ParseRedisInterfaceToken(redisToken interface{}) (*Claims, error) {
 	return GetClaimFromToken(string(redisToken.([]uint8)))
 }
 
-//Validation token, false means failure, true means successful verification
+// Validation token, false means failure, true means successful verification
 func VerifyToken(token, uid string) (bool, error) {
 	claims, err := ParseToken(token, "")
 	if err != nil {
