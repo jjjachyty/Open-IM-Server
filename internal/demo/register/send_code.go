@@ -112,6 +112,9 @@ func SendVerificationCode(c *gin.Context) {
 	log.NewDebug(params.OperationID, config.Config.Demo)
 	if params.Email != "" {
 		m := gomail.NewMessage()
+
+		log.Info(params.OperationID, ">>>>>>", config.Config.Demo.Mail.SmtpAddr, config.Config.Demo.Mail.SmtpPort, config.Config.Demo.Mail.SenderMail, config.Config.Demo.Mail.SenderAuthorizationCode)
+
 		m.SetHeader(`From`, config.Config.Demo.Mail.SenderMail)
 		m.SetHeader(`To`, []string{account}...)
 		m.SetHeader(`Subject`, config.Config.Demo.Mail.Title)
