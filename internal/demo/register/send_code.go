@@ -19,7 +19,6 @@ import (
 var sms SMS
 
 func init() {
-	log.NewDebug("start>>>>>>>>>>>>>>")
 	var err error
 	if config.Config.Demo.AliSMSVerify.Enable {
 		sms, err = NewAliSMS()
@@ -57,12 +56,14 @@ func SendVerificationCode(c *gin.Context) {
 	}
 	log.Info(operationID, "SendVerificationCode args: ", "area code: ", params.AreaCode, "Phone Number: ", params.PhoneNumber)
 	var account string
+	var accountKey string
 	if params.Email != "" {
 		account = params.Email
+		accountKey = account
 	} else {
 		account = params.PhoneNumber
+		accountKey = params.AreaCode + account
 	}
-	var accountKey = params.AreaCode + account
 	if params.UsedFor == 0 {
 		params.UsedFor = constant.VerificationCodeForRegister
 	}
@@ -112,16 +113,13 @@ func SendVerificationCode(c *gin.Context) {
 	log.NewDebug(params.OperationID, config.Config.Demo)
 	if params.Email != "" {
 		m := gomail.NewMessage()
-
-		log.Info(params.OperationID, ">>>>>>", config.Config.Demo.Mail.SmtpAddr, config.Config.Demo.Mail.SmtpPort, config.Config.Demo.Mail.SenderMail, config.Config.Demo.Mail.SenderAuthorizationCode)
-
 		m.SetHeader(`From`, config.Config.Demo.Mail.SenderMail)
 		m.SetHeader(`To`, []string{account}...)
 		m.SetHeader(`Subject`, config.Config.Demo.Mail.Title)
 		m.SetBody(`text/html`, fmt.Sprintf("%d", code))
 		if err := gomail.NewDialer(config.Config.Demo.Mail.SmtpAddr, config.Config.Demo.Mail.SmtpPort, config.Config.Demo.Mail.SenderMail, config.Config.Demo.Mail.SenderAuthorizationCode).DialAndSend(m); err != nil {
 			log.Error(params.OperationID, "send mail error", account, err.Error())
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": err.Error()})
+			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": ""})
 			return
 		}
 	} else {
