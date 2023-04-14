@@ -25,6 +25,7 @@ message GroupInfo{
   int32 applyMemberFriend = 15;
   uint32 notificationUpdateTime = 16;
   string notificationUserID = 17;
+  bool is_living = 18;
 }
 
 message GroupInfoForSet{
