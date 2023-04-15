@@ -1,5 +1,7 @@
 package base_info
 
+import "Open_IM/pkg/common/db"
+
 type SetClientInitConfigReq struct {
 	OperationID     string  `json:"operationID"  binding:"required"`
 	DiscoverPageURL *string `json:"discoverPageURL"`
@@ -15,7 +17,5 @@ type GetClientInitConfigReq struct {
 
 type GetClientInitConfigResp struct {
 	CommResp
-	Data struct {
-		DiscoverPageURL string `json:"discoverPageURL"`
-	} `json:"data"`
+	Data db.ClientInitConfig `json:"data"`
 }

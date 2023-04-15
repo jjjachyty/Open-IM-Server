@@ -65,7 +65,7 @@ func GetClientInitConfig(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"errCode": 500, "errMsg": err.Error()})
 		return
 	}
-	resp.Data.DiscoverPageURL = config.DiscoverPageURL
+	resp.Data = config
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp ", resp)
 	c.JSON(http.StatusOK, resp)
 
