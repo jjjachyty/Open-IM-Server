@@ -23,7 +23,7 @@ message Conversation{
   string ex = 14;
   int64  updateUnreadCountTime = 15;
   int32 burnDuration = 16;
-
+  bool isLiving=17;
 }
 message ModifyConversationFieldReq{
   Conversation conversation = 1;
