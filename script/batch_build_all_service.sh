@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+git pull
 source ./style_info.cfg
 source ./path_info.cfg
 source ./function.sh

@@ -661,17 +661,6 @@ func (rpc *rpcChat) sendMsgToWriter(m *pbChat.MsgDataToMQ, key string, status st
 			log.Error(m.OperationID, "kafka send failed", "send data", m.String(), "pid", pid, "offset", offset, "err", err.Error(), "key", key, status)
 		}
 		log.Info(m.OperationID, "sendMsgToWriter   client msgID ", m.MsgData.ClientMsgID)
-		log.Info(m.OperationID, "开始自动跟随发送消息>>>>>>>>>>>>>>>>>>>>>>")
-
-		if string(m.MsgData.Content) == "666" {
-			pbb, _ := proto.Marshal(m)
-			n := &pbChat.MsgDataToMQ{}
-			proto.Unmarshal(pbb, n)
-			n.MsgData.SendID = "1225925647"
-			n.MsgData.ServerMsgID = GetMsgID(n.MsgData.SendID)
-
-			rpc.messageWriter.SendMessage(n, key, m.OperationID)
-		}
 		return err
 	case constant.OfflineStatus:
 		pid, offset, err := rpc.messageWriter.SendMessage(m, key, m.OperationID)
