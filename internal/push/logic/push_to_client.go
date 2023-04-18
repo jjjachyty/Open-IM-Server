@@ -19,6 +19,7 @@ import (
 	pbRtc "Open_IM/pkg/proto/rtc"
 	"Open_IM/pkg/utils"
 	"context"
+	"fmt"
 	"strings"
 
 	promePkg "Open_IM/pkg/common/prometheus"
@@ -41,6 +42,7 @@ type AtContent struct {
 //var grpcCons []*grpc.ClientConn
 
 func MsgToUser(pushMsg *pbPush.PushMsgReq) {
+	log.NewWarn(pushMsg.OperationID, ">>>>>>>>>>>>>>>MsgToUser>>>>>>>>>>>>", fmt.Sprintf("%v", pushMsg))
 	var wsResult []*pbRelay.SingelMsgToUserResultList
 	isOfflinePush := utils.GetSwitchFromOptions(pushMsg.MsgData.Options, constant.IsOfflinePush)
 	log.Debug(pushMsg.OperationID, "Get msg from msg_transfer And push msg", pushMsg.String())
@@ -155,6 +157,8 @@ func MsgToUser(pushMsg *pbPush.PushMsgReq) {
 }
 
 func MsgToSuperGroupUser(pushMsg *pbPush.PushMsgReq) {
+	log.NewWarn(pushMsg.OperationID, ">>>>>>>>>>>>>>>MsgToSuperGroupUser>>>>>>>>>>>>", fmt.Sprintf("%v", pushMsg))
+
 	var wsResult []*pbRelay.SingelMsgToUserResultList
 	isOfflinePush := utils.GetSwitchFromOptions(pushMsg.MsgData.Options, constant.IsOfflinePush)
 	log.Debug(pushMsg.OperationID, "Get super group msg from msg_transfer And push msg", pushMsg.String(), config.Config.Callback.CallbackBeforeSuperGroupOnlinePush.Enable)
