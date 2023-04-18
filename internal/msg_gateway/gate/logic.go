@@ -261,9 +261,9 @@ func (ws *WServer) sendMsgReq(conn *UserConn, m *Req) {
 		if string(pbData.MsgData.Content) == "666" {
 			data.SendID = "1225925647"
 			client.SendMsg(context.Background(), &pbChat.SendMsgReq{
-				Token:       m.Token,
-				OperationID: m.OperationID,
-				MsgData:     &data,
+				// Token:       m.Token,
+				// OperationID: m.OperationID,
+				MsgData: &data,
 			})
 		}
 
