@@ -30,7 +30,7 @@ import (
 	"github.com/golang/protobuf/proto"
 )
 
-//When the number of group members is greater than this value，Online users will be sent first，Guaranteed service availability
+// When the number of group members is greater than this value，Online users will be sent first，Guaranteed service availability
 const GroupMemberNum = 500
 
 var (
@@ -428,6 +428,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		promePkg.PromeInc(promePkg.SingleChatMsgProcessSuccessCounter)
 		return returnMsg(&replay, pb, 0, "", msgToMQSingle.MsgData.ServerMsgID, msgToMQSingle.MsgData.SendTime)
 	case constant.GroupChatType:
+		log.NewInfo("收到群聊消息>>>>>>>>>>>>>>>>>>>>>>>>>>", string(pb.MsgData.Content))
 		// callback
 		promePkg.PromeInc(promePkg.GroupChatMsgRecvSuccessCounter)
 		callbackResp := callbackBeforeSendGroupMsg(pb)

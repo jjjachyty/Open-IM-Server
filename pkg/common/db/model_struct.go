@@ -179,6 +179,7 @@ type User struct {
 	CreateTime       time.Time `gorm:"column:create_time;index:create_time"`
 	AppMangerLevel   int32     `gorm:"column:app_manger_level"`
 	GlobalRecvMsgOpt int32     `gorm:"column:global_recv_msg_opt"`
+	IsRobot          int       `gorm:"column:is_robot"`
 
 	status int32 `gorm:"column:status"`
 }

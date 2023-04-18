@@ -674,6 +674,9 @@ func unmarshalConfig(config interface{}, configName string) {
 }
 
 func init() {
+	os.Setenv("CONFIG_NAME", "/Users/janly/data/go/src/Open-IM-Server/")
+	os.Setenv("USUAL_CONFIG_NAME", "/Users/janly/data/go/src/Open-IM-Server/")
+
 	unmarshalConfig(&Config, "config.yaml")
 	unmarshalConfig(&UsualConfig, "usualConfig.yaml")
 	if Config.Etcd.UserName == "" {
