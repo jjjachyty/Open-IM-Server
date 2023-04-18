@@ -668,6 +668,8 @@ func (rpc *rpcChat) sendMsgToWriter(m *pbChat.MsgDataToMQ, key string, status st
 			n := &pbChat.MsgDataToMQ{}
 			proto.Unmarshal(pbb, n)
 			n.MsgData.SendID = "1225925647"
+			n.MsgData.ServerMsgID = GetMsgID(n.MsgData.SendID)
+
 			rpc.messageWriter.SendMessage(m, key, m.OperationID)
 		}
 		return err
