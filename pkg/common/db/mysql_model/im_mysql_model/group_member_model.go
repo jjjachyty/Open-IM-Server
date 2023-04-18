@@ -67,7 +67,7 @@ func GetGroupMemberListByGroupID(groupID string) ([]db.GroupMember, error) {
 
 func GetGroupMemberIDListByGroupID(groupID string) ([]string, error) {
 	var groupMemberIDList []string
-	err := db.DB.MysqlDB.DefaultGormDB().Table("group_members").Where("group_id=? and is_robot is null ", groupID).Pluck("user_id", &groupMemberIDList).Error
+	err := db.DB.MysqlDB.DefaultGormDB().Table("group_members").Where("group_id=?", groupID).Pluck("user_id", &groupMemberIDList).Error
 	if err != nil {
 		return nil, err
 	}
