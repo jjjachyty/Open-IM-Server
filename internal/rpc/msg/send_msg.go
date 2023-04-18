@@ -18,6 +18,7 @@ import (
 	"Open_IM/pkg/utils"
 	"context"
 	"errors"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -638,6 +639,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 }
 
 func (rpc *rpcChat) sendMsgToWriter(m *pbChat.MsgDataToMQ, key string, status string) error {
+	log.NewWarn(m.OperationID, ">>>>>>>>>>>>>>>>>>>sendMsgToWriter>>>>>>>>>>>>", "key=", key, "status=", status, "data=", fmt.Sprintf("%v", m))
 	switch status {
 	case constant.OnlineStatus:
 		if m.MsgData.ContentType == constant.SignalingNotification {
