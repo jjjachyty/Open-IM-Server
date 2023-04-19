@@ -19,6 +19,13 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 		log.Error("获取群用户信息出错", err)
 		return
 	}
+	recivers := make([]string, 0)
+	for _, v := range m[constant.OnlineStatus] {
+		if rpc.robots[v] == "" {
+			recivers = append(recivers, v)
+		}
+	}
+
 	if senderInfo.RoleLevel == 3 {
 		var newMsg sdk_ws.MsgData
 		var sendTag bool
@@ -41,7 +48,7 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 			newMsg.ClientMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.SendTime++
 
-			go rpc.sendMsgToGroupOptimization(m[constant.OnlineStatus], &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
+			go rpc.sendMsgToGroupOptimization(recivers, &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
 			count--
 		}
 		wg.Wait()
