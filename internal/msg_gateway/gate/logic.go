@@ -256,16 +256,6 @@ func (ws *WServer) sendMsgReq(conn *UserConn, m *Req) {
 			log.NewInfo(pbData.OperationID, "rpc call success to sendMsgReq", reply.String())
 			ws.sendMsgResp(conn, m, reply)
 		}
-		//TODO:
-		log.Info(m.OperationID, "开始自动跟随发送消息>>>>>>>>>>>>>>>>>>>>>>")
-		if string(pbData.MsgData.Content) == "666" {
-			data.SendID = "1225925647"
-			client.SendMsg(context.Background(), &pbChat.SendMsgReq{
-				// Token:       m.Token,
-				// OperationID: m.OperationID,
-				MsgData: &data,
-			})
-		}
 
 	} else {
 		nReply.ErrCode = errCode
