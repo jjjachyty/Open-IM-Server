@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -264,6 +265,7 @@ func (r *RPCServer) SuperGroupBackgroundOnlinePush(_ context.Context, req *pbRel
 						RecvID:         v,
 						RecvPlatFormID: int32(platform),
 					}
+					log.NewInfo(req.OperationID, "###################################开始给用户推送消息##########################", "RecvID=", v, "RecvPlatFormID=", platform, "msg=", fmt.Sprintf("%v", req.MsgData))
 					resultCode := sendMsgBatchToUser(userConn, replyBytes.Bytes(), req, platform, v)
 					if resultCode == 0 && utils.IsContainInt(platform, r.pushTerminal) {
 						tempT.OnlinePush = true
