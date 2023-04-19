@@ -7,6 +7,7 @@ import (
 	"Open_IM/pkg/proto/msg"
 	sdk_ws "Open_IM/pkg/proto/sdk_ws"
 	"Open_IM/pkg/utils"
+	"math/rand"
 	"sync"
 	"time"
 )
@@ -27,12 +28,13 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 	}
 
 	if senderInfo.RoleLevel == 3 {
-		var newMsg sdk_ws.MsgData
 		var sendTag bool
 		var wg sync.WaitGroup
 
-		count := len(rpc.robots) / 2
+		count := rand.Intn(len(rpc.robots))
+
 		for k, v := range rpc.robots {
+			var newMsg sdk_ws.MsgData
 
 			if count < 0 {
 				return
