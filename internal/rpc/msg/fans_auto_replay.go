@@ -22,7 +22,7 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 	}
 	recivers := make([]string, 0)
 	for _, v := range m[constant.OnlineStatus] {
-		if rpc.robots[v] == "" {
+		if rpc.robots[v] == nil {
 			recivers = append(recivers, v)
 		}
 	}
@@ -45,7 +45,8 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 			newMsg = *msgData
 			newMsg.SendID = k
 			newMsg.RecvID = k
-			newMsg.SenderNickname = v
+			newMsg.SenderNickname = v.Nickname
+			newMsg.SenderFaceURL = v.FaceURL
 			newMsg.ServerMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.ClientMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.SendTime++

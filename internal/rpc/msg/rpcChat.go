@@ -34,7 +34,7 @@ type rpcChat struct {
 	//offlineProducer *kafka.Producer
 	delMsgCh       chan deleteMsg
 	dMessageLocker MessageLocker
-	robots         map[string]string
+	robots         map[string]*db.User
 }
 
 type deleteMsg struct {
@@ -134,13 +134,13 @@ func (rpc *rpcChat) Run() {
 	go rpc.runCh()
 	rpc.initPrometheus()
 	//开始加载机器人
-	rpc.robots = make(map[string]string)
+	rpc.robots = make(map[string]*db.User)
 	users, err := im_mysql_model.GetAllRobots()
 	if err != nil {
 		log.Error("", "获取机器人出错", err.Error())
 	}
 	for _, v := range users {
-		rpc.robots[v.UserID] = v.Nickname
+		rpc.robots[v.UserID] = v
 	}
 
 	err = srv.Serve(listener)
