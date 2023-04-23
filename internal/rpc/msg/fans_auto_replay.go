@@ -13,7 +13,6 @@ import (
 )
 
 func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string) {
-	<-time.NewTimer(time.Second * 2).C
 	log.NewInfo("开始粉丝互动>>>>>>>>>>>>>>>>>>>>>>>>>>")
 	senderInfo, err := rocksCache.GetGroupMemberInfoFromCache(msgData.GroupID, msgData.SendID)
 	if err != nil {
@@ -50,6 +49,8 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 			newMsg.ServerMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.ClientMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.SendTime++
+			rand.Seed(time.Now().UnixNano())
+			<-time.NewTimer(time.Duration(rand.Int63n(1000))).C
 
 			go rpc.sendMsgToGroupOptimization(recivers, &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
 			count--
