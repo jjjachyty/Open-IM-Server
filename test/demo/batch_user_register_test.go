@@ -29,9 +29,9 @@ func TestGetRandomName(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		if err = imdb.InsertIntoGroupMember(db.GroupMember{GroupID: "3082243770", UserID: userID, Nickname: name, FaceURL: faceURL, RoleLevel: 1, IsRobot: 1, JoinTime: time.Now(), JoinSource: 2, InviterUserID: "2892606321", OperatorUserID: "2892606321"}); err != nil {
-			panic(err)
-		}
+		// if err = imdb.InsertIntoGroupMember(db.GroupMember{GroupID: "3887944111", UserID: userID, Nickname: name, FaceURL: faceURL, RoleLevel: 1, IsRobot: 1, JoinTime: time.Now(), JoinSource: 2, InviterUserID: "2892606321", OperatorUserID: "2892606321"}); err != nil {
+		// 	panic(err)
+		// }
 	}
 
 }
