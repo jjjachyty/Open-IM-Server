@@ -127,8 +127,8 @@ type GroupMember struct {
 	InviterUserID  string    `gorm:"column:inviter_user_id;size:64"`
 	OperatorUserID string    `gorm:"column:operator_user_id;size:64"`
 	MuteEndTime    time.Time `gorm:"column:mute_end_time"`
-	IsRobot        int32     `gorm:"column:is_robot"`
 	Ex             string    `gorm:"column:ex;size:1024"`
+	IsRobot        int8      `gorm:"column:is_robot"`
 }
 
 // message GroupRequest{

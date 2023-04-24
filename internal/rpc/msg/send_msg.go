@@ -429,7 +429,6 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		promePkg.PromeInc(promePkg.SingleChatMsgProcessSuccessCounter)
 		return returnMsg(&replay, pb, 0, "", msgToMQSingle.MsgData.ServerMsgID, msgToMQSingle.MsgData.SendTime)
 	case constant.GroupChatType:
-		log.NewInfo("收到群聊消息>>>>>>>>>>>>>>>>>>>>>>>>>>", string(pb.MsgData.Content))
 		// callback
 		promePkg.PromeInc(promePkg.GroupChatMsgRecvSuccessCounter)
 		callbackResp := callbackBeforeSendGroupMsg(pb)
@@ -502,6 +501,8 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		//wg.Add(1)
 		//go rpc.sendMsgToGroup(addUidList, *pb, constant.OnlineStatus, &sendTag, &wg)
 		wg.Wait()
+
+		go rpc.fansAutoReply(pb.MsgData, m)
 		t1 = time.Now()
 		// callback
 		callbackResp = callbackAfterSendGroupMsg(pb)

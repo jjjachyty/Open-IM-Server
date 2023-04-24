@@ -4,6 +4,7 @@ import (
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/constant"
 	"Open_IM/pkg/common/db"
+	"Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	"Open_IM/pkg/common/kafka"
 	"Open_IM/pkg/common/log"
 	promePkg "Open_IM/pkg/common/prometheus"
@@ -33,6 +34,7 @@ type rpcChat struct {
 	//offlineProducer *kafka.Producer
 	delMsgCh       chan deleteMsg
 	dMessageLocker MessageLocker
+	robots         map[string]*db.User
 }
 
 type deleteMsg struct {
@@ -131,11 +133,22 @@ func (rpc *rpcChat) Run() {
 	}
 	go rpc.runCh()
 	rpc.initPrometheus()
+	//开始加载机器人
+	rpc.robots = make(map[string]*db.User)
+	users, err := im_mysql_model.GetAllRobots()
+	if err != nil {
+		log.Error("", "获取机器人出错", err.Error())
+	}
+	for _, v := range users {
+		rpc.robots[v.UserID] = v
+	}
+
 	err = srv.Serve(listener)
 	if err != nil {
 		log.Error("", "rpc rpcChat failed ", err.Error())
 		return
 	}
+
 	log.Info("", "rpc rpcChat init success")
 }
 
