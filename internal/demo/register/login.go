@@ -4,6 +4,7 @@ import (
 	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/constant"
+	"Open_IM/pkg/common/db"
 	"Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	http2 "Open_IM/pkg/common/http"
 	"Open_IM/pkg/common/log"
@@ -19,6 +20,7 @@ type ParamsLogin struct {
 	Email       string `json:"email"`
 	PhoneNumber string `json:"phoneNumber"`
 	Password    string `json:"password"`
+	Code        string `json:"code"`
 	Platform    int32  `json:"platform"`
 	OperationID string `json:"operationID" binding:"required"`
 	AreaCode    string `json:"areaCode"`
@@ -35,8 +37,6 @@ func Login(c *gin.Context) {
 		account = params.Email
 	} else if params.PhoneNumber != "" {
 		account = params.PhoneNumber
-	} else {
-		account = params.UserID
 	}
 
 	r, err := im_mysql_model.GetRegister(account, params.AreaCode, params.UserID)
@@ -45,7 +45,23 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.NotRegistered, "errMsg": "Mobile phone number is not registered"})
 		return
 	}
-	if r.Password != params.Password {
+	if params.Code != "" && params.Code != config.Config.Demo.SuperCode {
+		code, err := db.DB.GetAccountCode(account)
+		log.NewInfo(params.OperationID, "redis phone number and verificating Code", "key: ", account, "code: ", code, "params: ", params)
+		if err != nil {
+			log.NewError(params.OperationID, "Verification code expired", account, "err", err.Error())
+			data := make(map[string]interface{})
+			data["account"] = account
+			c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code expired!", "data": data})
+			return
+		}
+		if code != params.Code {
+			log.Info(params.OperationID, "Verification code error", account, params.Code)
+			data := make(map[string]interface{})
+			data["account"] = account
+			c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code error!", "data": data})
+		}
+	} else if r.Password != params.Password {
 		log.NewError(params.OperationID, "password  err", params.Password, account, r.Password, r.Account)
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.PasswordErr, "errMsg": "password err"})
 		return
