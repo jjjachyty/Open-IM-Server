@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"sort"
 	"strconv"
 	"time"
@@ -198,6 +199,33 @@ func GetGroupMemberInfoFromCache(groupID, userID string) (*db.GroupMember, error
 
 func DelGroupMemberInfoFromCache(groupID, userID string) error {
 	return db.DB.Rc.TagAsDeleted(groupMemberInfoCache + groupID + "-" + userID)
+}
+
+func GetGroupRobotsRoundFromCache(groupID string) ([]*db.GroupMember, error) {
+	groupMemberIDList, err := GetGroupMemberIDListFromCache(groupID)
+	if err != nil {
+		return nil, err
+	}
+	rand.Shuffle(len(groupMemberIDList), func(i, j int) {
+		groupMemberIDList[i], groupMemberIDList[j] = groupMemberIDList[j], groupMemberIDList[i]
+	})
+	count := rand.Intn(len(groupMemberIDList))
+	var groupMemberList []*db.GroupMember
+	for _, userID := range groupMemberIDList {
+
+		if len(groupMemberList) >= count {
+			break
+		}
+		groupMembers, err := GetGroupMemberInfoFromCache(groupID, userID)
+		if err != nil {
+			log.NewError("", utils.GetSelfFuncName(), err.Error(), groupID, userID)
+			continue
+		}
+		if groupMembers.IsRobot == 1 {
+			groupMemberList = append(groupMemberList, groupMembers)
+		}
+	}
+	return groupMemberList, err
 }
 
 func GetGroupMembersInfoFromCache(count, offset int32, groupID string) ([]*db.GroupMember, error) {
