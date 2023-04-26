@@ -47,8 +47,7 @@ func (rpc *rpcChat) fansAutoReply(msgData *sdk_ws.MsgData, m map[string][]string
 			newMsg.ClientMsgID = utils.GetMsgID(newMsg.SendID)
 			newMsg.SendTime++
 			rand.Seed(time.Now().UnixNano())
-			<-time.NewTimer(time.Duration(rand.Int63n(2000))).C
-
+			<-time.NewTimer(time.Second * time.Duration(rand.Intn(5))).C
 			go rpc.sendMsgToGroupOptimization(recivers, &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
 
 		}
