@@ -45,22 +45,25 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.NotRegistered, "errMsg": "Mobile phone number is not registered"})
 		return
 	}
-	if params.Code != "" && params.Code != config.Config.Demo.SuperCode {
-		code, err := db.DB.GetAccountCode(account)
-		log.NewInfo(params.OperationID, "redis phone number and verificating Code", "key: ", account, "code: ", code, "params: ", params)
-		if err != nil {
-			log.NewError(params.OperationID, "Verification code expired", account, "err", err.Error())
-			data := make(map[string]interface{})
-			data["account"] = account
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code expired!", "data": data})
-			return
+	if params.Code != "" {
+		if params.Code != config.Config.Demo.SuperCode {
+			code, err := db.DB.GetAccountCode(account)
+			log.NewInfo(params.OperationID, "redis phone number and verificating Code", "key: ", account, "code: ", code, "params: ", params)
+			if err != nil {
+				log.NewError(params.OperationID, "Verification code expired", account, "err", err.Error())
+				data := make(map[string]interface{})
+				data["account"] = account
+				c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code expired!", "data": data})
+				return
+			}
+			if code != params.Code {
+				log.Info(params.OperationID, "Verification code error", account, params.Code)
+				data := make(map[string]interface{})
+				data["account"] = account
+				c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code error!", "data": data})
+			}
 		}
-		if code != params.Code {
-			log.Info(params.OperationID, "Verification code error", account, params.Code)
-			data := make(map[string]interface{})
-			data["account"] = account
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.CodeInvalidOrExpired, "errMsg": "Verification code error!", "data": data})
-		}
+
 	} else if r.Password != params.Password {
 		log.NewError(params.OperationID, "password  err", params.Password, account, r.Password, r.Account)
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.PasswordErr, "errMsg": "password err"})
