@@ -141,7 +141,7 @@ func SetPassword(c *gin.Context) {
 		}
 	}
 	log.Info(params.OperationID, "begin store mysql", account, params.Password, "info", params.FaceURL, params.Nickname)
-	err = imdb.SetPassword(account, params.Password, params.Ex, userID, params.AreaCode, ip)
+	err = imdb.SetPassword(account, params.Password, params.Ex, userID, params.AreaCode, params.InvitationCode, ip)
 	if err != nil {
 		log.NewError(params.OperationID, "set phone number password error", account, "err", err.Error())
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.RegisterFailed, "errMsg": err.Error()})

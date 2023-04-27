@@ -209,7 +209,11 @@ func GetGroupRobotsRoundFromCache(groupID string) ([]*db.GroupMember, error) {
 	rand.Shuffle(len(groupMemberIDList), func(i, j int) {
 		groupMemberIDList[i], groupMemberIDList[j] = groupMemberIDList[j], groupMemberIDList[i]
 	})
-	count := rand.Intn(len(groupMemberIDList))
+	roundN := len(groupMemberIDList)
+	if roundN > 50 {
+		roundN = 50
+	}
+	count := rand.Intn(roundN)
 	var groupMemberList []*db.GroupMember
 	for _, userID := range groupMemberIDList {
 

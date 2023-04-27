@@ -18,14 +18,15 @@ func GetRegisterInfo(userID string) (*db.Register, error) {
 	return &r, db.DB.MysqlDB.DefaultGormDB().Table("registers").Where("user_id = ?", userID).Take(&r).Error
 }
 
-func SetPassword(account, password, ex, userID, areaCode, ip string) error {
+func SetPassword(account, password, ex, userID, areaCode, invitationCode, ip string) error {
 	r := db.Register{
-		Account:    account,
-		Password:   password,
-		Ex:         ex,
-		UserID:     userID,
-		RegisterIP: ip,
-		AreaCode:   areaCode,
+		Account:        account,
+		Password:       password,
+		InvitationCode: invitationCode,
+		Ex:             ex,
+		UserID:         userID,
+		RegisterIP:     ip,
+		AreaCode:       areaCode,
 	}
 	return db.DB.MysqlDB.DefaultGormDB().Table("registers").Create(&r).Error
 }
