@@ -776,6 +776,8 @@ func (s *userServer) GetBlockUsers(ctx context.Context, req *pbUser.GetBlockUser
 	return resp, nil
 }
 func (s *userServer) GetLiveByUserID(ctx context.Context, req *pbUser.GetLiveByUserIDReq) (resp *pbUser.GetLiveByUserIDResp, err error) {
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
+
 	userLive, err := imdb.GetLiveByUserID(req.UserID)
 	if err != nil {
 		return &pbUser.GetLiveByUserIDResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
