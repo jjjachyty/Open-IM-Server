@@ -524,7 +524,7 @@ func GetUserLive(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
 		return
 	}
-
+	reqPb.UserID = req.UserID
 	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImUserName, reqPb.OperationID)
 	if etcdConn == nil {
 		errMsg := reqPb.OperationID + "getcdv3.GetDefaultConn == nil"
@@ -533,6 +533,7 @@ func GetUserLive(c *gin.Context) {
 		return
 	}
 	client := rpc.NewUserClient(etcdConn)
+
 	respPb, err := client.GetLiveByUserID(context.Background(), &reqPb)
 	if err != nil {
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), err.Error(), reqPb.String())
