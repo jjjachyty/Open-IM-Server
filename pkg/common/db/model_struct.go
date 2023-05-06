@@ -185,6 +185,30 @@ type User struct {
 	status int32 `gorm:"column:status"`
 }
 
+type UserLive struct {
+	UserID       string `gorm:"column:user_id;primary_key;size:64"`
+	LeftDuration int32  `gorm:"column:left_duration"`
+	LiveDuration int32  `gorm:"column:live_duration"`
+	LiveCount    int32  `gorm:"column:live_count"`
+	GroupID      string `gorm:"column:group_id;type:char(128)" json:"groupID"`
+	StartAt      int64  `gorm:"column:start_at"`
+	EndAt        int64  `gorm:"column:end_at"`
+	Duration     int32  `gorm:"column:duration"`
+	ChannelName  string `gorm:"column:channel_name"`
+	CreateAt     int64  `gorm:"column:create_at"`
+}
+type UserLiveLog struct {
+	UserID       string `gorm:"column:user_id;primary_key;size:64"`
+	GroupID      string `gorm:"column:group_id;type:char(128)" json:"groupID"`
+	StartAt      int64  `gorm:"column:start_at"`
+	UserCount    int32  `gorm:"column:user_count"`
+	MessageCount int32  `gorm:"column:message_count"`
+	EndAt        int64  `gorm:"column:end_at"`
+	Duration     int32  `gorm:"column:duration"`
+	ChannelName  string `gorm:"column:channel_name"`
+	CreateAt     int64  `gorm:"column:create_at"`
+}
+
 type UserIpRecord struct {
 	UserID        string    `gorm:"column:user_id;primary_key;size:64"`
 	CreateIp      string    `gorm:"column:create_ip;size:15"`

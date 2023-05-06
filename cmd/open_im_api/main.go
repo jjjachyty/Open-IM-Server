@@ -136,6 +136,7 @@ func main() {
 		authRouterGroup.POST("/user_token", apiAuth.UserToken)       //1
 		authRouterGroup.POST("/parse_token", apiAuth.ParseToken)     //1
 		authRouterGroup.POST("/force_logout", apiAuth.ForceLogout)   //1
+		authRouterGroup.POST("/rtc_token", apiAuth.RTCToken)         //1
 	}
 	//Third service
 	thirdGroup := r.Group("/third")

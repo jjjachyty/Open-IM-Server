@@ -5,6 +5,7 @@ go 1.15
 require (
 	cloud.google.com/go/firestore v1.6.1 // indirect
 	firebase.google.com/go v3.13.0+incompatible
+	github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src v0.0.0-20230331020753-b213dcf2243d
 	github.com/Shopify/sarama v1.32.0
 	github.com/alibabacloud-go/darabonba-openapi v0.1.11
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.8

@@ -205,7 +205,23 @@ message GetBlockUsersResp{
   int32 UserNums = 4;
 }
 
+message GetLiveByUserIDReq{
+  string operationID = 1;
+  string userID = 2;
+}
 
+message GetLiveByUserIDResp{
+  CommonResp  CommonResp = 1;
+  string userID = 2;
+}
+message StartLiveReq{
+  string userID = 1;
+  string groupID = 2;
+  string channelName = 3;
+}
+message StartLiveResp{
+  CommonResp  CommonResp = 1;
+}
 service user {
   rpc GetUserInfo(GetUserInfoReq) returns(GetUserInfoResp);
   rpc UpdateUserInfo(UpdateUserInfoReq) returns(UpdateUserInfoResp);
@@ -228,5 +244,8 @@ service user {
   rpc BlockUser(BlockUserReq) returns (BlockUserResp);
   rpc UnBlockUser(UnBlockUserReq) returns (UnBlockUserResp);
   rpc GetBlockUsers(GetBlockUsersReq) returns (GetBlockUsersResp);
+  rpc GetLiveByUserID(GetLiveByUserIDReq) returns (GetLiveByUserIDResp);
+  rpc StartLive(StartLiveReq) returns (StartLiveResp);
+
 }
 

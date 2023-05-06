@@ -98,6 +98,9 @@ func initMysqlDB() {
 	if !db.Migrator().HasTable(&User{}) {
 		db.Migrator().CreateTable(&User{})
 	}
+	if !db.Migrator().HasTable(&UserLive{}) {
+		db.Migrator().CreateTable(&UserLive{})
+	}
 	if !db.Migrator().HasTable(&Black{}) {
 		db.Migrator().CreateTable(&Black{})
 	}

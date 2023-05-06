@@ -253,7 +253,9 @@ push:
     appSecret:
     enable: false
 
-
+agora:
+  appId:  "b50fc6db8a764cef811ee040cc67b217"
+  appCertificate: "a71ae0a4d0d64d31a21eb50c62395e5d"
 
 manager:
   #app管理员userID和对应的secret  建议修改。 用于管理后台登录，也可以用户管理后台对应的api

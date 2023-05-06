@@ -161,6 +161,10 @@ type config struct {
 		Password   string   `yaml:"password"`
 		Secret     string   `yaml:"secret"`
 	}
+	Agora struct {
+		AppID          string `yaml:"appId"`
+		AppCertificate string `yaml:"appCertificate"`
+	}
 	Log struct {
 		StorageLocation       string   `yaml:"storageLocation"`
 		RotationTime          int      `yaml:"rotationTime"`
