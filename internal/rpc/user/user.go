@@ -784,6 +784,8 @@ func (s *userServer) GetLiveByUserID(ctx context.Context, req *pbUser.GetLiveByU
 	}
 	var userLiveResp sdkws.UserLive
 	utils.CopyStructFields(&userLiveResp, userLive)
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp: ", userLiveResp.String())
+
 	return &pbUser.GetLiveByUserIDResp{CommonResp: &pbUser.CommonResp{}, UserLive: &userLiveResp}, err
 }
 
