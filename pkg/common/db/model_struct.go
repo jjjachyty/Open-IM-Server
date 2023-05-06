@@ -197,6 +197,11 @@ type UserLive struct {
 	ChannelName  string `gorm:"column:channel_name"`
 	CreateAt     int64  `gorm:"column:create_at"`
 }
+
+func (UserLive) TableName() string {
+	return "user_live"
+}
+
 type UserLiveLog struct {
 	UserID       string `gorm:"column:user_id;primary_key;size:64"`
 	GroupID      string `gorm:"column:group_id;type:char(128)" json:"groupID"`
