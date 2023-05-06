@@ -525,6 +525,8 @@ func GetUserLive(c *gin.Context) {
 		return
 	}
 	reqPb.UserID = req.UserID
+	reqPb.OperationID = req.OperationID
+
 	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImUserName, reqPb.OperationID)
 	if etcdConn == nil {
 		errMsg := reqPb.OperationID + "getcdv3.GetDefaultConn == nil"
@@ -541,8 +543,7 @@ func GetUserLive(c *gin.Context) {
 		return
 	}
 
-	userLive := api.GetUserLiveResp{}
-	utils.CopyStructFields(&userLive, respPb)
-	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), resp)
+	utils.CopyStructFields(&resp, respPb)
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp:", resp)
 	c.JSON(http.StatusOK, resp)
 }
