@@ -21,6 +21,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"time"
 
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 
@@ -773,4 +774,22 @@ func (s *userServer) GetBlockUsers(ctx context.Context, req *pbUser.GetBlockUser
 	}
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp: ", resp)
 	return resp, nil
+}
+func (s *userServer) GetLiveByUserID(ctx context.Context, req *pbUser.GetLiveByUserIDReq) (resp *pbUser.GetLiveByUserIDResp, err error) {
+	userLive, err := imdb.GetLiveByUserID(req.UserID)
+	if err != nil {
+		return &pbUser.GetLiveByUserIDResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	var userLiveResp sdkws.UserLive
+	utils.CopyStructFields(&userLiveResp, userLive)
+	return &pbUser.GetLiveByUserIDResp{CommonResp: &pbUser.CommonResp{}, UserLive: &userLiveResp}, err
+}
+
+func (s *userServer) StartLive(ctx context.Context, req *pbUser.StartLiveReq) (resp *pbUser.StartLiveResp, err error) {
+
+	if err := imdb.UpdateLiveInfo(db.UserLive{UserID: req.UserID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}); err != nil {
+		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{}}, err
+
 }

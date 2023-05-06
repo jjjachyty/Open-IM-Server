@@ -513,3 +513,35 @@ func GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 	return
 }
+func GetUserLive(c *gin.Context) {
+	var (
+		req   api.GetUserLiveReq
+		resp  api.GetUserLiveResp
+		reqPb rpc.GetLiveByUserIDReq
+	)
+	if err := c.BindJSON(&req); err != nil {
+		log.NewError(req.OperationID, "Bind failed ", err.Error(), req)
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err.Error()})
+		return
+	}
+
+	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImUserName, reqPb.OperationID)
+	if etcdConn == nil {
+		errMsg := reqPb.OperationID + "getcdv3.GetDefaultConn == nil"
+		log.NewError(reqPb.OperationID, errMsg)
+		c.JSON(http.StatusInternalServerError, gin.H{"errCode": 500, "errMsg": errMsg})
+		return
+	}
+	client := rpc.NewUserClient(etcdConn)
+	respPb, err := client.GetLiveByUserID(context.Background(), &reqPb)
+	if err != nil {
+		log.NewError(req.OperationID, utils.GetSelfFuncName(), err.Error(), reqPb.String())
+		c.JSON(http.StatusBadRequest, gin.H{"errCode": 500, "errMsg": err.Error()})
+		return
+	}
+
+	userLive := api.GetUserLiveResp{}
+	utils.CopyStructFields(&userLive, respPb)
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), resp)
+	c.JSON(http.StatusOK, resp)
+}

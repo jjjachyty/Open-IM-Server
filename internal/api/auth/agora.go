@@ -3,7 +3,6 @@ package apiAuth
 import (
 	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
-	imdb "Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	"Open_IM/pkg/common/log"
 	"net/http"
 	"strconv"
@@ -23,9 +22,9 @@ type RTCTokenResponse struct {
 	Data TokenInfo `json:"data"`
 }
 type TokenInfo struct {
-	AppId        string `json:"appId"`
-	Token        string `json:"token"`
-	LeftDuration int32  `json:"leftDuration"`
+	AppId string `json:"appId"`
+	Token string `json:"token"`
+	// LeftDuration int32  `json:"leftDuration"`
 }
 
 // var rtc_token string
@@ -76,17 +75,17 @@ func RTCToken(c *gin.Context) {
 	case 2:
 		params.Role = rtctokenbuilder.RoleSubscriber
 	}
-	liveUser, err := imdb.GetLiveByUserID(params.Uid_rtc_int)
-	if err != nil {
-		log.NewError(params.OperationID, err)
-		c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err})
-		return
-	}
+	// liveUser, err := imdb.GetLiveByUserID(params.Uid_rtc_int)
+	// if err != nil {
+	// 	log.NewError(params.OperationID, err)
+	// 	c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err})
+	// 	return
+	// }
 	token, err := generateRtcToken(uint32(uid), params.Channel_name, rtctokenbuilder.Role(params.Role))
 	if err != nil {
 		log.NewError(params.OperationID, err)
 		c.JSON(http.StatusOK, gin.H{"errCode": 500, "errMsg": "获取token出错"})
 		return
 	}
-	c.JSON(http.StatusOK, RTCTokenResponse{CommResp: api.CommResp{}, Data: TokenInfo{AppId: config.Config.Agora.AppID, Token: token, LeftDuration: liveUser.LeftDuration}})
+	c.JSON(http.StatusOK, RTCTokenResponse{CommResp: api.CommResp{}, Data: TokenInfo{AppId: config.Config.Agora.AppID, Token: token}})
 }

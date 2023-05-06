@@ -14,6 +14,16 @@ type GetUsersInfoResp struct {
 	Data         []map[string]interface{}      `json:"data" swaggerignore:"true"`
 }
 
+type GetUserLiveReq struct {
+	OperationID string `json:"operationID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
+}
+type GetUserLiveResp struct {
+	CommResp
+	UserLive []*open_im_sdk.PublicUserInfo `json:"-"`
+	Data     map[string]interface{}        `json:"data" swaggerignore:"true"`
+}
+
 type UpdateSelfUserInfoReq struct {
 	ApiUserInfo
 	OperationID string `json:"operationID" binding:"required"`

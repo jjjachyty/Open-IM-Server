@@ -212,7 +212,7 @@ message GetLiveByUserIDReq{
 
 message GetLiveByUserIDResp{
   CommonResp  CommonResp = 1;
-  string userID = 2;
+  server_api_params.UserLive userLive = 2;
 }
 message StartLiveReq{
   string userID = 1;

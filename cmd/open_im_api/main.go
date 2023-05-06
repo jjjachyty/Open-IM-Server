@@ -74,6 +74,7 @@ func main() {
 		userRouterGroup.POST("/account_check", manage.AccountCheck)       //1
 		//	userRouterGroup.POST("/get_users_online_status", manage.GetUsersOnlineStatus) //1
 		userRouterGroup.POST("/get_users", user.GetUsers)
+		userRouterGroup.POST("/user_live", user.GetUserLive)
 	}
 	//friend routing group
 	friendRouterGroup := r.Group("/friend")

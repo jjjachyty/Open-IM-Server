@@ -3,15 +3,17 @@ import "Open-IM-Server/pkg/proto/sdk_ws/wrappers.proto";
 option go_package = "Open_IM/pkg/proto/sdk_ws;server_api_params";
 package server_api_params;
 
-
 ////////////////////////////////base///////////////////////////////
 message UserLive{
   string userID = 1;
   int32 leftDuration =2;
-  string channelName = 3;
-  string groupID = 4;
-  int64 startAt = 5;
-  int64 endAt = 6;
+  int32 liveDuration =3;
+  int32 liveCount =4;
+  string channelName = 5;
+  string groupID = 6;
+  int64 createAt = 7;
+  int64 startAt = 8;
+  int64 endAt = 9;
 }
 
 message GroupInfo{
