@@ -543,7 +543,7 @@ func GetUserLive(c *gin.Context) {
 		return
 	}
 
-	utils.CopyStructFields(&resp, respPb)
+	resp.Data = jsonData.JsonDataOne(respPb.UserLive)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp:", resp)
 	c.JSON(http.StatusOK, resp)
 }
