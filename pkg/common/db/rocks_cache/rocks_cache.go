@@ -14,6 +14,8 @@ import (
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/fatih/structs"
 )
 
 const (
@@ -21,6 +23,10 @@ const (
 	friendRelationCache       = "FRIEND_RELATION_CACHE:"
 	blackListCache            = "BLACK_LIST_CACHE:"
 	groupCache                = "GROUP_CACHE:"
+	liveCache                 = "Live_CACHE:"
+	liveMemberCache           = "Live_MEMBER_CACHE:"
+	liveRobotCache            = "Live_ROBOT_CACHE:"
+	liveAtmosphereCache       = "Live_ATMOSPHERE_CACHE:"
 	groupInfoCache            = "GROUP_INFO_CACHE:"
 	groupOwnerIDCache         = "GROUP_OWNER_ID:"
 	joinedGroupListCache      = "JOINED_GROUP_LIST_CACHE:"
@@ -320,6 +326,97 @@ func GetGroupInfoFromCache(groupID string) (*db.Group, error) {
 	groupInfo := &db.Group{}
 	err = json.Unmarshal([]byte(groupInfoStr), groupInfo)
 	return groupInfo, utils.Wrap(err, "")
+}
+
+func GetLiveInfoFromCache(channelID int64) (*db.UserLive, error) {
+	getLiveInfo := func() (string, error) {
+		liveInfo, err := imdb.GetLiveByChannelID(channelID)
+		if err != nil {
+			return "", utils.Wrap(err, "")
+		}
+		bytes, err := json.Marshal(liveInfo)
+		if err != nil {
+			return "", utils.Wrap(err, "")
+		}
+		return string(bytes), nil
+	}
+	groupLiveStr, err := db.DB.Rc.Fetch(fmt.Sprintf("%s%d", liveCache, channelID), time.Second*30*60, getLiveInfo)
+	if err != nil {
+		return nil, utils.Wrap(err, "")
+	}
+	liveInfo := &db.UserLive{}
+	err = json.Unmarshal([]byte(groupLiveStr), liveInfo)
+	return liveInfo, utils.Wrap(err, "")
+}
+func GetLiveAtmosphereCache(channelID int64) {
+
+}
+func GetLiveUsersFromCache(channelID int64) (map[string]string, error) {
+	userMap, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveMemberCache, channelID)).Result()
+	return userMap, utils.Wrap(err, "")
+}
+func GetLiveRobotsFromCache(channelID int64) (map[string]string, error) {
+	userMap, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveRobotCache, channelID)).Result()
+	return userMap, utils.Wrap(err, "")
+}
+
+func AddLiveAtmosphere(channelID int64, userID int64) error {
+	err := db.DB.RDB.SAdd(context.Background(), fmt.Sprintf("%s%d", liveAtmosphereCache, channelID), userID).Err()
+	return utils.Wrap(err, "")
+}
+
+// 氛围组
+func GetLiveAtmosphereFromCache(channelID int64) ([]string, error) {
+	userMap, err := db.DB.RDB.SMembers(context.Background(), fmt.Sprintf("%s%d", liveAtmosphereCache, channelID)).Result()
+	return userMap, utils.Wrap(err, "")
+}
+
+func IsLiveAtmosphereUser(channelID int64, userID int64) (bool, error) {
+	has, err := db.DB.RDB.SIsMember(context.Background(), fmt.Sprintf("%s%d", liveAtmosphereCache, channelID), userID).Result()
+	return has, utils.Wrap(err, "")
+}
+
+func CreateLiveRoom(live db.UserLive) error {
+	m := structs.Map(live)
+	err := db.DB.RDB.HSet(context.Background(), fmt.Sprintf("%s%d", liveMemberCache, live.ChannelID), m).Err()
+	return utils.Wrap(err, "")
+}
+
+func JoinLiveRoom(channelID int64, userID int64, nickName string, faceURL string, isRoot bool) error {
+	prefixKey := liveMemberCache
+	if isRoot {
+		prefixKey = liveRobotCache
+	}
+	err := db.DB.RDB.HMSet(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), userID, fmt.Sprintf("%s,%s", nickName, faceURL)).Err()
+	if err != nil {
+		return utils.Wrap(err, "")
+	}
+
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "total_view", 1).Err(); err != nil {
+		return utils.Wrap(err, "更新总观看人数失败")
+	}
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "current_view", 1).Err(); err != nil {
+		return utils.Wrap(err, "更新当前观看人数失败")
+	}
+
+	return utils.Wrap(err, "")
+}
+func LevelLiveRoom(channelID int64, userID int64, isRoot bool) error {
+	prefixKey := liveMemberCache
+	if isRoot {
+		prefixKey = liveRobotCache
+	}
+	err := db.DB.RDB.HDel(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), fmt.Sprintf("%s", userID)).Err()
+	if err != nil {
+		return utils.Wrap(err, "")
+	}
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "total_view", -1).Err(); err != nil {
+		return utils.Wrap(err, "更新总观看人数失败")
+	}
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "current_view", -1).Err(); err != nil {
+		return utils.Wrap(err, "更新当前观看人数失败")
+	}
+	return utils.Wrap(err, "")
 }
 
 func DelGroupInfoFromCache(groupID string) error {

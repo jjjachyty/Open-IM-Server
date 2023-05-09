@@ -633,7 +633,74 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		}
 		promePkg.PromeInc(promePkg.WorkSuperGroupChatMsgProcessSuccessCounter)
 		return returnMsg(&replay, pb, 0, "", msgToMQSingle.MsgData.ServerMsgID, msgToMQSingle.MsgData.SendTime)
+	case constant.LiveChatType:
+		// callback
+		promePkg.PromeInc(promePkg.GroupChatMsgRecvSuccessCounter)
+		callbackResp := callbackBeforeSendGroupMsg(pb)
+		if callbackResp.ErrCode != 0 {
+			log.NewError(pb.OperationID, utils.GetSelfFuncName(), "callbackBeforeSendGroupMsg resp:", callbackResp)
+		}
+		if callbackResp.ActionCode != constant.ActionAllow {
+			if callbackResp.ErrCode == 0 {
+				callbackResp.ErrCode = 201
+			}
+			log.NewDebug(pb.OperationID, utils.GetSelfFuncName(), "callbackBeforeSendSingleMsg result", "end rpc and return", callbackResp)
+			promePkg.PromeInc(promePkg.GroupChatMsgProcessFailedCounter)
+			return returnMsg(&replay, pb, int32(callbackResp.ErrCode), callbackResp.ErrMsg, "", 0)
+		}
+		var memberUserIDList []string
+		channleID, _ := strconv.ParseInt(pb.MsgData.GroupID, 0, 64)
+		userIDList, err := utils2.GetliveMemberUserIDList(channleID, pb.OperationID)
+		if err != nil {
+			errMsg := pb.OperationID + err.Error()
+			log.NewError(pb.OperationID, errMsg)
+			return returnMsg(&replay, pb, int32(callbackResp.ErrCode), callbackResp.ErrMsg, "", 0)
+		}
 
+		if _, ok := userIDList[pb.MsgData.SendID]; !ok {
+			return returnMsg(&replay, pb, 202, "you are not in this living", "", 0)
+		}
+		log.Debug(pb.OperationID, "GetGroupAllMember userID list", memberUserIDList, "len: ", len(memberUserIDList))
+
+		t1 = time.Now()
+
+		//split  parallel send
+		var wg sync.WaitGroup
+		var sendTag bool
+		var split = 20
+
+		remain := len(memberUserIDList) % split
+		for i := 0; i < len(memberUserIDList)/split; i++ {
+			wg.Add(1)
+			tmp := valueCopy(pb)
+			//	go rpc.sendMsgToGroup(v[i*split:(i+1)*split], *pb, k, &sendTag, &wg)
+			go rpc.sendMsgToGroupOptimization(memberUserIDList[i*split:(i+1)*split], tmp, constant.OnlineStatus, &sendTag, &wg)
+		}
+		if remain > 0 {
+			wg.Add(1)
+			tmp := valueCopy(pb)
+			//	go rpc.sendMsgToGroup(v[split*(len(v)/split):], *pb, k, &sendTag, &wg)
+			go rpc.sendMsgToGroupOptimization(memberUserIDList[split*(len(memberUserIDList)/split):], tmp, constant.OnlineStatus, &sendTag, &wg)
+		}
+		wg.Wait()
+		log.Debug(pb.OperationID, "send msg cost time1 ", time.Since(t1), pb.MsgData.ClientMsgID)
+
+		go rpc.liveFansAutoReply(pb.MsgData, memberUserIDList)
+		t1 = time.Now()
+		// callback
+		callbackResp = callbackAfterSendGroupMsg(pb)
+		if callbackResp.ErrCode != 0 {
+			log.NewError(pb.OperationID, utils.GetSelfFuncName(), "callbackAfterSendGroupMsg resp: ", callbackResp)
+		}
+		if !sendTag {
+			log.NewWarn(pb.OperationID, "send tag is ", sendTag)
+			promePkg.PromeInc(promePkg.GroupChatMsgProcessFailedCounter)
+			return returnMsg(&replay, pb, 201, "kafka send msg err", "", 0)
+		} else {
+			log.Debug(pb.OperationID, "send msg cost time3 ", time.Since(t1), pb.MsgData.ClientMsgID)
+			promePkg.PromeInc(promePkg.GroupChatMsgProcessSuccessCounter)
+			return returnMsg(&replay, pb, 0, "", msgToMQSingle.MsgData.ServerMsgID, msgToMQSingle.MsgData.SendTime)
+		}
 	default:
 		return returnMsg(&replay, pb, 203, "unknown sessionType", "", 0)
 	}

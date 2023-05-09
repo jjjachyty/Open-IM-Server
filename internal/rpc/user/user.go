@@ -18,6 +18,7 @@ import (
 	"Open_IM/pkg/utils"
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -790,10 +791,25 @@ func (s *userServer) GetLiveByUserID(ctx context.Context, req *pbUser.GetLiveByU
 }
 
 func (s *userServer) StartLive(ctx context.Context, req *pbUser.StartLiveReq) (resp *pbUser.StartLiveResp, err error) {
-
-	if err := imdb.UpdateLiveInfo(db.UserLive{UserID: req.UserID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}); err != nil {
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
+	if req.ChannelID == 0 || req.UserID == 0 {
+		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
+	}
+	live := db.UserLive{UserID: req.UserID, GroupID: req.GroupID, ChannelID: req.ChannelID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}
+	if err := imdb.CreateLiveInfo(live); err != nil {
+		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	if err = rocksCache.CreateLiveRoom(live); err != nil {
+		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	//获取用户信息
+	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", live.UserID))
+	if err != nil {
+		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	//加入房间
+	if err = rocksCache.JoinLiveRoom(live.ChannelID, live.UserID, user.Nickname, user.FaceURL, false); err != nil {
 		return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 	return &pbUser.StartLiveResp{CommonResp: &pbUser.CommonResp{}}, err
-
 }

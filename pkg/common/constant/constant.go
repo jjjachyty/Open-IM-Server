@@ -133,6 +133,7 @@ const (
 	GroupChatType        = 2
 	SuperGroupChatType   = 3
 	NotificationChatType = 4
+	LiveChatType         = 5
 	//token
 	NormalToken  = 0
 	InValidToken = 1

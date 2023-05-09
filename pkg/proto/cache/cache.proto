@@ -50,6 +50,17 @@ message GetGroupMemberIDListFromCacheReq {
   string groupID = 2;
 }
 
+message GetLiveMemberIDListFromCacheReq{
+  string operationID = 1;
+  int64 channelID = 2;
+}
+
+message GetliveMemberIDListFromCacheResp {
+  CommonResp commonResp = 1;
+  map<string,string> userIDList = 2;
+ 
+}
+
 message GetGroupMemberIDListFromCacheResp {
   CommonResp commonResp = 1;
   repeated string userIDList = 2;
@@ -80,7 +91,8 @@ service cache{
 
   // group
   rpc GetGroupMemberIDListFromCache(GetGroupMemberIDListFromCacheReq) returns(GetGroupMemberIDListFromCacheResp);
-
+  // live
+  rpc GetLiveMemberIDListFromCache(GetLiveMemberIDListFromCacheReq) returns(GetliveMemberIDListFromCacheResp);
   // for dtm
   rpc DelGroupMemberIDListFromCache(DelGroupMemberIDListFromCacheReq) returns(DelGroupMemberIDListFromCacheResp);
 }

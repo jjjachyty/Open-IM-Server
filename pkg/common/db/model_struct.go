@@ -181,21 +181,22 @@ type User struct {
 	AppMangerLevel   int32     `gorm:"column:app_manger_level"`
 	GlobalRecvMsgOpt int32     `gorm:"column:global_recv_msg_opt"`
 	IsRobot          int       `gorm:"column:is_robot"`
-
-	status int32 `gorm:"column:status"`
+	LeftDuration     int64     `gorm:"column:left_duration"`
+	status           int32     `gorm:"column:status"`
 }
 
 type UserLive struct {
-	UserID       string `gorm:"column:user_id;primary_key;size:64"`
-	LeftDuration int32  `gorm:"column:left_duration"`
-	LiveDuration int32  `gorm:"column:live_duration"`
-	LiveCount    int32  `gorm:"column:live_count"`
-	GroupID      string `gorm:"column:group_id;type:char(128)" json:"groupID"`
-	StartAt      int64  `gorm:"column:start_at"`
-	EndAt        int64  `gorm:"column:end_at"`
-	Duration     int32  `gorm:"column:duration"`
-	ChannelName  string `gorm:"column:channel_name"`
-	CreateAt     int64  `gorm:"column:create_at"`
+	UserID      int64  `gorm:"column:user_id;primary_key;size:64"`            //用户ID
+	GroupID     int64  `gorm:"column:group_id;type:char(128)" json:"groupID"` //群ID
+	StartAt     int64  `gorm:"column:start_at"`                               //开始时间
+	EndAt       int64  `gorm:"column:end_at"`                                 //结束时间
+	HostID      int64  `gorm:"column:host_id"`                                //主持人
+	TotalView   int64  `gorm:"column:total_view"`                             //总观看量
+	CurrentView int64  `gorm:"column:current_view"`                           //当前观看量
+	Duration    int32  `gorm:"column:duration"`                               //播放时长
+	ChannelID   int64  `gorm:"column:channel_id"`                             //直播ID
+	ChannelName string `gorm:"column:channel_name"`                           //直播名字
+	CreateAt    int64  `gorm:"column:create_at"`                              //创建时间
 }
 
 func (UserLive) TableName() string {

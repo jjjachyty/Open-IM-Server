@@ -21,6 +21,17 @@ type GroupMemberUserIDListHash struct {
 var CacheGroupMemberUserIDList = make(map[string]*GroupMemberUserIDListHash, 0)
 var CacheGroupMtx sync.RWMutex
 
+// 先不缓存
+func GetliveMemberUserIDList(channelID int64, operationID string) (map[string]string, error) {
+	memberUserIDListRemote, err := GetLiveMemberUserIDListFromRemote(channelID, operationID)
+	if err != nil {
+		log.Error(operationID, "GetGroupMemberUserIDListFromRemote failed ", err.Error(), channelID)
+		return nil, utils.Wrap(err, "获取直播用户出错")
+	}
+	// CacheGroupMemberUserIDList[groupID] = &GroupMemberUserIDListHash{MemberListHash: groupHashRemote, UserIDList: memberUserIDListRemote}
+	return memberUserIDListRemote, nil
+}
+
 func GetGroupMemberUserIDList(groupID string, operationID string) ([]string, error) {
 	groupHashRemote, err := GetGroupMemberUserIDListHashFromRemote(groupID)
 	if err != nil {
@@ -69,6 +80,27 @@ func GetGroupMemberUserIDListFromRemote(groupID string, operationID string) ([]s
 	}
 	client := pbCache.NewCacheClient(etcdConn)
 	cacheResp, err := client.GetGroupMemberIDListFromCache(context.Background(), getGroupMemberIDListFromCacheReq)
+	if err != nil {
+		log.NewError(operationID, "GetGroupMemberIDListFromCache rpc call failed ", err.Error())
+		return nil, utils.Wrap(err, "GetGroupMemberIDListFromCache rpc call failed")
+	}
+	if cacheResp.CommonResp.ErrCode != 0 {
+		errMsg := operationID + "GetGroupMemberIDListFromCache rpc logic call failed " + cacheResp.CommonResp.ErrMsg
+		log.NewError(operationID, errMsg)
+		return nil, errors.New("errMsg")
+	}
+	return cacheResp.UserIDList, nil
+}
+func GetLiveMemberUserIDListFromRemote(channelID int64, operationID string) (map[string]string, error) {
+	getLiveMemberIDListFromCacheReq := &pbCache.GetLiveMemberIDListFromCacheReq{OperationID: operationID, ChannelID: channelID}
+	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImCacheName, operationID)
+	if etcdConn == nil {
+		errMsg := operationID + "getcdv3.GetDefaultConn == nil"
+		log.NewError(operationID, errMsg)
+		return nil, errors.New("errMsg")
+	}
+	client := pbCache.NewCacheClient(etcdConn)
+	cacheResp, err := client.GetLiveMemberIDListFromCache(context.Background(), getLiveMemberIDListFromCacheReq)
 	if err != nil {
 		log.NewError(operationID, "GetGroupMemberIDListFromCache rpc call failed ", err.Error())
 		return nil, utils.Wrap(err, "GetGroupMemberIDListFromCache rpc call failed")

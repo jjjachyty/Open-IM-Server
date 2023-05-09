@@ -165,6 +165,23 @@ func (s *cacheServer) GetGroupMemberIDListFromCache(_ context.Context, req *pbCa
 	return resp, nil
 }
 
+func (s *cacheServer) GetLiveMemberIDListFromCache(_ context.Context, req *pbCache.GetLiveMemberIDListFromCacheReq) (resp *pbCache.GetliveMemberIDListFromCacheResp, err error) {
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
+	resp = &pbCache.GetliveMemberIDListFromCacheResp{
+		CommonResp: &pbCache.CommonResp{},
+	}
+	userIDList, err := rocksCache.GetLiveUsersFromCache(req.ChannelID)
+	if err != nil {
+		log.NewError(req.OperationID, utils.GetSelfFuncName(), "GetGroupMemberIDListFromCache failed", err.Error())
+		resp.CommonResp.ErrCode = constant.ErrDB.ErrCode
+		resp.CommonResp.ErrMsg = constant.ErrDB.ErrMsg
+		return resp, nil
+	}
+	resp.UserIDList = userIDList
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "resp: ", resp.String())
+	return resp, nil
+}
+
 func (s *cacheServer) DelGroupMemberIDListFromCache(_ context.Context, req *pbCache.DelGroupMemberIDListFromCacheReq) (resp *pbCache.DelGroupMemberIDListFromCacheResp, err error) {
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
 	resp = &pbCache.DelGroupMemberIDListFromCacheResp{CommonResp: &pbCache.CommonResp{}}
