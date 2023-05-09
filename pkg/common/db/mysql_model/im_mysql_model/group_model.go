@@ -44,6 +44,12 @@ func GetGroupInfoByGroupID(groupID string) (*db.Group, error) {
 	return &groupInfo, err
 }
 
+func GetLiveInfoByGroupID(groupID string) (*db.Group, error) {
+	var groupInfo db.Group
+	err := db.DB.MysqlDB.DefaultGormDB().Table("user_live").Where("channel_id=?", groupID).Take(&groupInfo).Error
+	return &groupInfo, err
+}
+
 func GetGroupInfoByGroupIDList(groupIDList []string) ([]*db.Group, error) {
 	var groupInfoList []*db.Group
 	err := db.DB.MysqlDB.DefaultGormDB().Table("groups").Where("group_id in (?)", groupIDList).Find(&groupIDList).Error
