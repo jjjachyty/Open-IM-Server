@@ -828,6 +828,7 @@ prometheus:
   groupPrometheusPort: [ 20150 ]
   authPrometheusPort: [ 20160 ]
   pushPrometheusPort: [ 20170 ]
+  livePrometheusPort: [ 20180 ]
   adminCmsPrometheusPort: [ 20200 ]
   officePrometheusPort: [ 20210 ]
   organizationPrometheusPort: [ 20220 ]
