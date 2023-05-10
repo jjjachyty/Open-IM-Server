@@ -25,6 +25,7 @@ type StartLiveReq struct {
 	OperationID string `json:"operationID" binding:"required"`
 	ChannelID   int64  `json:"channelID" binding:"required"`
 	UserID      int64  `json:"userID" binding:"required"`
+	Platform    int    `json:"platform"`
 }
 
 type CloseLiveReq struct {

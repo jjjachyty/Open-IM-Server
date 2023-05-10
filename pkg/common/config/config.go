@@ -150,6 +150,7 @@ type config struct {
 		OpenImAuthName         string `yaml:"openImAuthName"`
 		OpenImAdminCMSName     string `yaml:"openImAdminCMSName"`
 		OpenImOfficeName       string `yaml:"openImOfficeName"`
+		OpenImLiveName         string `yaml:"openImLiveName"`
 		OpenImOrganizationName string `yaml:"openImOrganizationName"`
 		OpenImConversationName string `yaml:"openImConversationName"`
 		OpenImCacheName        string `yaml:"openImCacheName"`

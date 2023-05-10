@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
-var url = "https://api.multiavatar.com/%s.png"
+var url = "https://storage.push131.com/avator/%s.png"
 
 func TestGetRandomName(t *testing.T) {
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		fmt.Println("i>>>>>>>>>>>>>>>>>>>>>>", i)
 		<-time.After(1 * time.Nanosecond)
 
@@ -29,9 +29,9 @@ func TestGetRandomName(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		if err = imdb.InsertIntoGroupMember(db.GroupMember{GroupID: "1723413319", UserID: userID, Nickname: name, FaceURL: faceURL, RoleLevel: 1, IsRobot: 1, JoinTime: time.Now(), JoinSource: 2, InviterUserID: "2892606321", OperatorUserID: "2892606321"}); err != nil {
-			panic(err)
-		}
+		// if err = imdb.InsertIntoGroupMember(db.GroupMember{GroupID: "1723413319", UserID: userID, Nickname: name, FaceURL: faceURL, RoleLevel: 1, IsRobot: 1, JoinTime: time.Now(), JoinSource: 2, InviterUserID: "2892606321", OperatorUserID: "2892606321"}); err != nil {
+		// 	panic(err)
+		// }
 	}
 
 }

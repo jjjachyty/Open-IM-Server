@@ -117,7 +117,7 @@ func StartLive(c *gin.Context) {
 	}
 	log.NewInfo(params.OperationID, "StartLive req: ", params)
 
-	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImUserName, params.OperationID)
+	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImLiveName, params.OperationID)
 	if etcdConn == nil {
 		errMsg := params.OperationID + "getcdv3.GetDefaultConn == nil"
 		log.NewError(params.OperationID, errMsg)

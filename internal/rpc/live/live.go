@@ -186,7 +186,7 @@ func NewRpcLiveServer(port int) *rpcLive {
 	log.NewPrivateLog(constant.LogFileName)
 	return &rpcLive{
 		rpcPort:         port,
-		rpcRegisterName: config.Config.RpcRegisterName.OpenImAuthName,
+		rpcRegisterName: config.Config.RpcRegisterName.OpenImLiveName,
 		etcdSchema:      config.Config.Etcd.EtcdSchema,
 		etcdAddr:        config.Config.Etcd.EtcdAddr,
 	}
