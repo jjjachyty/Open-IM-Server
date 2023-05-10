@@ -39,7 +39,7 @@ service_port_name=(
   openImOrganizationPort
   openImConversationPort
   openImCachePort
-  openImlivePort
+  openImLivePort
 )
 
 service_prometheus_port_name=(
@@ -53,6 +53,7 @@ service_prometheus_port_name=(
   authPrometheusPort
   adminCmsPrometheusPort
   messagePrometheusPort
+  livePrometheusPort
   officePrometheusPort
   organizationPrometheusPort
   conversationPrometheusPort
