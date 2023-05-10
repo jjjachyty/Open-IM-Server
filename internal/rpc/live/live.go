@@ -126,7 +126,7 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "剩余分钟不足1分钟"}}, err
 	}
 
-	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), 1)
+	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
 	if err != nil {
 		log.NewError(req.OperationID, err)
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err

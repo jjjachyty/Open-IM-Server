@@ -65,7 +65,7 @@ func RTCToken(c *gin.Context) {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"errCode": 400, "errMsg": err})
 	// 	return
 	// }
-	token, err := putils.GenerateRtcToken(uint32(uid), params.Channel_name, rtctokenbuilder.Role(params.Role))
+	token, err := putils.GenerateRtcToken(uint32(uid), params.Channel_name, 2*60*60, 2*61*60, rtctokenbuilder.Role(params.Role))
 	if err != nil {
 		log.NewError(params.OperationID, err)
 		c.JSON(http.StatusOK, gin.H{"errCode": 500, "errMsg": "获取token出错"})
