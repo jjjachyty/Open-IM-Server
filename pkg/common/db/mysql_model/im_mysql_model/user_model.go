@@ -91,6 +91,9 @@ func GetUserNameByUserID(userID string) (string, error) {
 func UpdateUserInfo(user db.User) error {
 	return db.DB.MysqlDB.DefaultGormDB().Table("users").Where("user_id=?", user.UserID).Updates(&user).Error
 }
+func UpdateUserLeftDuration(userID, leftDuration int64) error {
+	return db.DB.MysqlDB.DefaultGormDB().Exec("update users a set a.left_duration=a.left_duration-?  where a.user_id = ?", leftDuration, userID).Error
+}
 
 func UpdateUserInfoByMap(user db.User, m map[string]interface{}) error {
 	err := db.DB.MysqlDB.DefaultGormDB().Table("users").Where("user_id=?", user.UserID).Updates(m).Error

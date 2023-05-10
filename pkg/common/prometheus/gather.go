@@ -9,6 +9,8 @@ var (
 	//auth rpc
 	UserLoginCounter    prometheus.Counter
 	UserRegisterCounter prometheus.Counter
+	//live
+	LiveUserCounter prometheus.Counter
 
 	//seg
 	SeqGetSuccessCounter prometheus.Counter

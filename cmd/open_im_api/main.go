@@ -7,6 +7,7 @@ import (
 	"Open_IM/internal/api/conversation"
 	"Open_IM/internal/api/friend"
 	"Open_IM/internal/api/group"
+	apiLive "Open_IM/internal/api/live"
 	"Open_IM/internal/api/manage"
 	apiChat "Open_IM/internal/api/msg"
 	"Open_IM/internal/api/office"
@@ -74,7 +75,6 @@ func main() {
 		userRouterGroup.POST("/account_check", manage.AccountCheck)       //1
 		//	userRouterGroup.POST("/get_users_online_status", manage.GetUsersOnlineStatus) //1
 		userRouterGroup.POST("/get_users", user.GetUsers)
-		userRouterGroup.POST("/user_live", user.GetUserLive)
 	}
 	//friend routing group
 	friendRouterGroup := r.Group("/friend")
@@ -138,6 +138,14 @@ func main() {
 		authRouterGroup.POST("/parse_token", apiAuth.ParseToken)     //1
 		authRouterGroup.POST("/force_logout", apiAuth.ForceLogout)   //1
 		authRouterGroup.POST("/rtc_token", apiAuth.RTCToken)         //1
+	}
+	liveGroup := r.Group("/live")
+	{
+		liveGroup.POST("/join", apiLive.JoinLiveRoom)   //1
+		liveGroup.POST("/level", apiLive.LevelLiveRoom) //1
+		liveGroup.POST("/start", apiLive.StartLive)     //1
+		liveGroup.POST("/close", apiLive.CLoseLive)     //1
+		liveGroup.GET("/users", apiLive.LiveRoomUsers)  //1
 	}
 	//Third service
 	thirdGroup := r.Group("/third")

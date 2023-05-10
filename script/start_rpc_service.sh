@@ -14,6 +14,7 @@ service_filename=(
   open_im_friend
   open_im_group
   open_im_auth
+  open_im_live
   open_im_admin_cms
   ${msg_name}
   open_im_office
@@ -38,6 +39,7 @@ service_port_name=(
   openImOrganizationPort
   openImConversationPort
   openImCachePort
+  openImlivePort
 )
 
 service_prometheus_port_name=(

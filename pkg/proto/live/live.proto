@@ -1,0 +1,87 @@
+syntax = "proto3";
+import "Open-IM-Server/pkg/proto/sdk_ws/ws.proto";
+// import "Open-IM-Server/pkg/proto/conversation/conversation.proto";
+option go_package = "Open_IM/pkg/proto/live;live";
+package live;
+
+
+message CommonResp{
+  int32  errCode = 1;
+  string errMsg = 2;
+}
+
+message LiveUserInfo{
+  int64 UserID = 1;
+  string nickName = 2;
+  string faceURL = 3;
+  int32 role = 4;
+}
+
+message JoinRoomReq{
+  string operationID = 1;
+  int64 channelID = 2;
+  int64 userID = 3;
+  string nickName= 4;
+  string faceURL=5;
+}
+message JoinRoomResp{
+  CommonResp  CommonResp = 1;
+  server_api_params.UserLive userLive = 2;
+  LiveUserInfo  owner = 3;
+}
+
+message LeveRoomReq{
+  string operationID = 1;
+  int64 channelID = 2;
+  int64 userID = 3;
+}
+message GetRoomUserReq{
+  string operationID = 1;
+  int64 channelID = 2;
+}
+message GetRoomUserResp{
+  CommonResp  CommonResp = 1;
+  repeated LiveUserInfo users= 2;
+}
+
+message LeveRoomResp{
+  CommonResp  CommonResp = 1;
+}
+message GetLiveByUserIDReq{
+  string operationID = 1;
+  string userID = 2;
+}
+message CloseLiveReq{
+  string operationID = 1;
+  int64 userID = 2;
+  int64 channelID = 3;
+}
+
+message CloseLiveResp{
+  CommonResp  CommonResp = 1;
+}
+
+message GetLiveByUserIDResp{
+  CommonResp  CommonResp = 1;
+  server_api_params.UserLive userLive = 2;
+}
+message StartLiveReq{
+  string operationID = 1;
+  int64 userID = 2;
+  int64 groupID = 3;
+  int64 channelID = 4;
+  string channelName = 5;
+}
+message StartLiveResp{
+  CommonResp  CommonResp = 1;
+  string rtcToken = 2;
+}
+service live {
+  rpc JoinRoom(JoinRoomReq) returns(JoinRoomResp);
+  rpc GetRoomUser(GetRoomUserReq) returns(GetRoomUserResp);
+  rpc LeveRoom(LeveRoomReq) returns(LeveRoomResp);
+  rpc GetLiveByUserID(GetLiveByUserIDReq) returns (GetLiveByUserIDResp);
+  rpc StartLive(StartLiveReq) returns (StartLiveResp);
+  rpc CloseLive(CloseLiveReq) returns (CloseLiveResp);
+}
+

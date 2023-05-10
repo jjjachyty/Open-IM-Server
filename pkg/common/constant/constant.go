@@ -57,7 +57,12 @@ const (
 	CustomNotification = 203
 
 	//SysRelated
-	NotificationBegin                     = 1000
+	NotificationBegin = 1000
+	//开始直播消息
+	StartLivingNotification = 1001
+	//关闭直播消息
+	CloseLivingNotification = 1002
+
 	DeleteMessageNotification             = 1100
 	FriendApplicationApprovedNotification = 1201 //add_friend_response
 	FriendApplicationRejectedNotification = 1202 //add_friend_response

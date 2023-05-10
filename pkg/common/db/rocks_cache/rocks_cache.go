@@ -13,9 +13,11 @@ import (
 	"math/rand"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/fatih/structs"
+	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -355,6 +357,46 @@ func GetLiveUsersFromCache(channelID int64) (map[string]string, error) {
 	userMap, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveMemberCache, channelID)).Result()
 	return userMap, utils.Wrap(err, "")
 }
+
+func GetLiveUsersValues(value string) (nickName, faceURL string) {
+	data := strings.Split(value, ",")
+	return data[0], data[1]
+}
+
+func GetLiveUsersLimitFromCache(channelID int64, count int64) (map[string]string, error) {
+	userMap := make(map[string]string, 0)
+	key := fmt.Sprintf("%s%d", liveMemberCache, channelID)
+	iterator := db.DB.RDB.HScan(context.Background(), key, 0, "*", count).Iterator()
+	var values []interface{}
+	var err error
+	for iterator.Next(context.Background()) {
+		userID := iterator.Val()
+		values, err = db.DB.RDB.HMGet(context.Background(), key, userID).Result()
+		if err != nil {
+			return nil, utils.Wrap(err, "")
+		}
+		userMap[userID] = values[0].(string)
+	}
+	return userMap, utils.Wrap(err, "")
+}
+
+func GetLiveRobotsLimitFromCache(channelID int64, count int64) (map[string]string, error) {
+	userMap := make(map[string]string, 0)
+	key := fmt.Sprintf("%s%d", liveRobotCache, channelID)
+	iterator := db.DB.RDB.HScan(context.Background(), key, 0, "*", count).Iterator()
+	var values []interface{}
+	var err error
+	for iterator.Next(context.Background()) {
+		userID := iterator.Val()
+		values, err = db.DB.RDB.HMGet(context.Background(), key, userID).Result()
+		if err != nil {
+			return nil, utils.Wrap(err, "")
+		}
+		userMap[userID] = values[0].(string)
+	}
+	return userMap, utils.Wrap(err, "")
+}
+
 func GetLiveRobotsFromCache(channelID int64) (map[string]string, error) {
 	userMap, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveRobotCache, channelID)).Result()
 	return userMap, utils.Wrap(err, "")
@@ -378,10 +420,20 @@ func IsLiveAtmosphereUser(channelID int64, userID int64) (bool, error) {
 
 func CreateLiveRoom(live db.UserLive) error {
 	m := structs.Map(live)
-	err := db.DB.RDB.HSet(context.Background(), fmt.Sprintf("%s%d", liveMemberCache, live.ChannelID), m).Err()
+	err := db.DB.RDB.HSet(context.Background(), fmt.Sprintf("%s%d", liveCache, live.ChannelID), m).Err()
 	return utils.Wrap(err, "")
 }
-
+func GetLiveRoomFromCache(channelID int64) (*db.UserLive, error) {
+	rt, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID)).Result()
+	if err != nil {
+		return nil, err
+	}
+	var user = &db.UserLive{}
+	if err := mapstructure.Decode(rt, &user); err != nil {
+		fmt.Println(err)
+	}
+	return user, utils.Wrap(err, "")
+}
 func JoinLiveRoom(channelID int64, userID int64, nickName string, faceURL string, isRoot bool) error {
 	prefixKey := liveMemberCache
 	if isRoot {
@@ -401,12 +453,9 @@ func JoinLiveRoom(channelID int64, userID int64, nickName string, faceURL string
 
 	return utils.Wrap(err, "")
 }
-func LevelLiveRoom(channelID int64, userID int64, isRoot bool) error {
+func LevelLiveRoom(channelID int64, userID int64) error {
 	prefixKey := liveMemberCache
-	if isRoot {
-		prefixKey = liveRobotCache
-	}
-	err := db.DB.RDB.HDel(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), fmt.Sprintf("%s", userID)).Err()
+	err := db.DB.RDB.HDel(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), fmt.Sprintf("%d", userID)).Err()
 	if err != nil {
 		return utils.Wrap(err, "")
 	}
@@ -417,6 +466,13 @@ func LevelLiveRoom(channelID int64, userID int64, isRoot bool) error {
 		return utils.Wrap(err, "更新当前观看人数失败")
 	}
 	return utils.Wrap(err, "")
+}
+
+func CloseLiveFromCache(channelID int64) error {
+	liveMemberCacheKey := fmt.Sprintf("%s%d", liveMemberCache, channelID)
+	liveRobotCacheKey := fmt.Sprintf("%s%d", liveRobotCache, channelID)
+	liveCacheKey := fmt.Sprintf("%s%d", liveCache, channelID)
+	return db.DB.RDB.Del(context.Background(), liveMemberCacheKey, liveRobotCacheKey, liveCacheKey).Err()
 }
 
 func DelGroupInfoFromCache(groupID string) error {
