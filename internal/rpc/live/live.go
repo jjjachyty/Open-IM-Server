@@ -127,7 +127,6 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 	if live != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
 	}
-
 	live = &db.UserLive{UserID: req.UserID, GroupID: req.GroupID, ChannelID: req.ChannelID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}
 	if err := imdb.CreateLiveInfo(live); err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
@@ -135,6 +134,7 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 	if err = rocksCache.CreateLiveRoom(*live); err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
+
 	//获取用户信息
 	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", live.UserID))
 	if err != nil {

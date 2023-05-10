@@ -11,6 +11,7 @@ import (
 	pbFriend "Open_IM/pkg/proto/friend"
 	"Open_IM/pkg/utils"
 	"encoding/json"
+	"fmt"
 	"math/big"
 	"net/http"
 	"strconv"
@@ -92,9 +93,13 @@ func SetPassword(c *gin.Context) {
 		// 		return
 		// 	}
 		// }
+
 		if config.Config.Demo.NeedInvitationCode && params.InvitationCode != "" {
-			err := imdb.CheckInvitationCode(params.InvitationCode)
-			if err != nil {
+			invitationUserID := new(big.Int)
+			invitationUserID.SetString("code", 16)
+			params.InvitationCode = fmt.Sprintf("%d", invitationUserID)
+			pass := imdb.CheckInvitationCodeV2(params.InvitationCode)
+			if !pass {
 				c.JSON(http.StatusOK, gin.H{"errCode": constant.InvitationError, "errMsg": "InvitationCode error"})
 				return
 			}
@@ -147,13 +152,13 @@ func SetPassword(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"errCode": constant.RegisterFailed, "errMsg": err.Error()})
 		return
 	}
-	if config.Config.Demo.NeedInvitationCode && params.InvitationCode != "" {
-		//判断一下验证码的使用情况
-		LockSucc := imdb.TryLockInvitationCode(params.InvitationCode, userID)
-		if LockSucc {
-			imdb.FinishInvitationCode(params.InvitationCode, userID)
-		}
-	}
+	// if config.Config.Demo.NeedInvitationCode && params.InvitationCode != "" {
+	// 	//判断一下验证码的使用情况
+	// 	LockSucc := imdb.TryLockInvitationCode(params.InvitationCode, userID)
+	// 	if LockSucc {
+	// 		imdb.FinishInvitationCode(params.InvitationCode, userID)
+	// 	}
+	// }
 	if err := imdb.InsertIpRecord(userID, ip); err != nil {
 		log.NewError(params.OperationID, utils.GetSelfFuncName(), userID, ip, err.Error())
 	}

@@ -53,6 +53,17 @@ func CheckInvitationCode(code string) error {
 	}
 	return nil
 }
+func CheckInvitationCodeV2(userID string) bool {
+
+	count := int64(0)
+	if err := db.DB.MysqlDB.DefaultGormDB().Table("users").Where("user_id = ?", userID).Count(&count).Error; err != nil {
+		return false
+	}
+	if count > 0 {
+		return true
+	}
+	return false
+}
 
 /**
  * 尝试加锁模式解决邀请码抢占的问题
