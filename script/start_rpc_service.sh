@@ -14,13 +14,13 @@ service_filename=(
   open_im_friend
   open_im_group
   open_im_auth
-  open_im_live
   open_im_admin_cms
   ${msg_name}
   open_im_office
   open_im_organization
   open_im_conversation
   open_im_cache
+  open_im_live
 )
 
 #service config port name
@@ -53,11 +53,11 @@ service_prometheus_port_name=(
   authPrometheusPort
   adminCmsPrometheusPort
   messagePrometheusPort
-  livePrometheusPort
   officePrometheusPort
   organizationPrometheusPort
   conversationPrometheusPort
   cachePrometheusPort
+  livePrometheusPort
 )
 
 for ((i = 0; i < ${#service_filename[*]}; i++)); do

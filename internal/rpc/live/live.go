@@ -194,7 +194,7 @@ func NewRpcLiveServer(port int) *rpcLive {
 
 func (rpc *rpcLive) Run() {
 	operationID := utils.OperationIDGenerator()
-	log.NewInfo(operationID, "rpc auth start...")
+	log.NewInfo(operationID, "rpc live start...")
 
 	listenIP := ""
 	if config.Config.ListenIP == "" {
@@ -248,5 +248,5 @@ func (rpc *rpcLive) Run() {
 		log.NewError(operationID, "Serve failed ", err.Error())
 		return
 	}
-	log.NewInfo(operationID, "rpc auth ok")
+	log.NewInfo(operationID, "rpc live ok")
 }

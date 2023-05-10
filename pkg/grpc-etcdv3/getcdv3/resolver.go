@@ -161,6 +161,7 @@ func GetConfigConn(serviceName string, operationID string) *grpc.ClientConn {
 	if config.Config.RpcRegisterName.OpenImRealTimeCommName == serviceName {
 		configPortList = config.Config.RpcPort.OpenImRealTimeCommPort
 	}
+	//live
 	if config.Config.RpcRegisterName.OpenImLiveName == serviceName {
 		configPortList = config.Config.RpcPort.OpenImLivePort
 	}
