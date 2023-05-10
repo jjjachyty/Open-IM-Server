@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Open_IM/internal/rpc/user"
+	"Open_IM/internal/rpc/live"
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/constant"
 	promePkg "Open_IM/pkg/common/prometheus"
@@ -15,7 +15,7 @@ func main() {
 	prometheusPort := flag.Int("prometheus_port", config.Config.Prometheus.UserPrometheusPort[0], "userPrometheusPort default listen port")
 	flag.Parse()
 	fmt.Println("start user rpc live, port: ", *rpcPort, ", OpenIM version: ", constant.CurrentVersion)
-	rpcServer := user.NewUserServer(*rpcPort)
+	rpcServer := live.NewRpcLiveServer(*rpcPort)
 	go func() {
 		err := promePkg.StartPromeSrv(*prometheusPort)
 		if err != nil {
