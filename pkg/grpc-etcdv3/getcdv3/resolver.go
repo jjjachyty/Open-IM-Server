@@ -6,6 +6,7 @@ import (
 	"Open_IM/pkg/utils"
 	"context"
 	"fmt"
+
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 
@@ -159,6 +160,9 @@ func GetConfigConn(serviceName string, operationID string) *grpc.ClientConn {
 	//14
 	if config.Config.RpcRegisterName.OpenImRealTimeCommName == serviceName {
 		configPortList = config.Config.RpcPort.OpenImRealTimeCommPort
+	}
+	if config.Config.RpcRegisterName.OpenImLiveName == serviceName {
+		configPortList = config.Config.RpcPort.OpenImLivePort
 	}
 	if len(configPortList) == 0 {
 		log.Error(operationID, "len(configPortList) == 0  ")
