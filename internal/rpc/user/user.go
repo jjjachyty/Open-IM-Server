@@ -39,7 +39,7 @@ func NewUserServer(port int) *userServer {
 	log.NewPrivateLog(constant.LogFileName)
 	return &userServer{
 		rpcPort:         port,
-		rpcRegisterName: config.Config.RpcRegisterName.OpenImLiveName,
+		rpcRegisterName: config.Config.RpcRegisterName.OpenImUserName,
 		etcdSchema:      config.Config.Etcd.EtcdSchema,
 		etcdAddr:        config.Config.Etcd.EtcdAddr,
 	}
