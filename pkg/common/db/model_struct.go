@@ -186,7 +186,7 @@ type User struct {
 }
 
 type UserLive struct {
-	UserID      int64  `gorm:"column:user_id;primary_key;size:64"`            //用户ID
+	UserID      int64  `gorm:"column:user_id;size:64"`                        //用户ID
 	GroupID     int64  `gorm:"column:group_id;type:char(128)" json:"groupID"` //群ID
 	StartAt     int64  `gorm:"column:start_at"`                               //开始时间
 	EndAt       int64  `gorm:"column:end_at"`                                 //结束时间

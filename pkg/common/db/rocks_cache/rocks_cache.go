@@ -453,6 +453,15 @@ func JoinLiveRoom(channelID int64, userID int64, nickName string, faceURL string
 
 	return utils.Wrap(err, "")
 }
+func UserInRoom(channelID int64, userID int64) (bool, error) {
+	prefixKey := liveMemberCache
+	in, err := db.DB.RDB.HExists(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), fmt.Sprintf("%d", userID)).Result()
+	if err != nil {
+		return false, utils.Wrap(err, "")
+	}
+
+	return in, utils.Wrap(err, "")
+}
 func LevelLiveRoom(channelID int64, userID int64) error {
 	prefixKey := liveMemberCache
 	err := db.DB.RDB.HDel(context.Background(), fmt.Sprintf("%s%d", prefixKey, channelID), fmt.Sprintf("%d", userID)).Err()

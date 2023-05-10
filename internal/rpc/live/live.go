@@ -112,8 +112,27 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 	if req.ChannelID == 0 || req.UserID == 0 {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
-	live := db.UserLive{UserID: req.UserID, GroupID: req.GroupID, ChannelID: req.ChannelID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}
+	//检查用户是否已有未结束的直播
+	live, err := imdb.GetUserLiving(fmt.Sprintf("%d", req.UserID))
+	if err != nil {
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+
+	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
+	if err != nil {
+		log.NewError(req.OperationID, err)
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+
+	if live != nil {
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
+	}
+
+	live = &db.UserLive{UserID: req.UserID, GroupID: req.GroupID, ChannelID: req.ChannelID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}
 	if err := imdb.CreateLiveInfo(live); err != nil {
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+	if err = rocksCache.CreateLiveRoom(*live); err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 	//获取用户信息
@@ -126,20 +145,20 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "剩余分钟不足1分钟"}}, err
 	}
 
-	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
+	in, err := rocksCache.UserInRoom(live.ChannelID, live.UserID)
 	if err != nil {
 		log.NewError(req.OperationID, err)
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 
 	}
-	if err = rocksCache.CreateLiveRoom(live); err != nil {
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	if in {
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
 	}
-
 	//加入房间
 	if err = rocksCache.JoinLiveRoom(live.ChannelID, live.UserID, user.Nickname, user.FaceURL, false); err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
+
 	return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
 }
 
