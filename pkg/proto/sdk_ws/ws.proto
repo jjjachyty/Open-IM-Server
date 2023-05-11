@@ -88,7 +88,7 @@ message UserInfo{
   int32 appMangerLevel = 10;
   int32 globalRecvMsgOpt = 11;
   string birthStr = 12;
-  int64 leftDuration = 13;
+  int32 leftDuration = 13;
 }
 
 message FriendInfo{
