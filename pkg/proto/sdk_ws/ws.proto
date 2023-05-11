@@ -283,6 +283,7 @@ message MsgData {
   bool   isReact = 40;
   bool isExternalExtensions = 41;
   int64 msgFirstModifyTime = 42;
+  string liveID = 43;
 
 }
 message OfflinePushInfo{
