@@ -384,7 +384,7 @@ type ClientInitConfig struct {
 	IosVersion         string `gorm:"column:ios_version" json:"ios_version"`
 	AdnroidURL         string `gorm:"column:android_url" json:"android_url"`
 	IosURL             string `gorm:"column:ios_url" json:"ios_url"`
-	NeedInvitationCode string `gorm:"column:need_invitationCode" json:"need_invitationCode"`
+	NeedInvitationCode string `gorm:"column:need_invitation_code" json:"need_invitation_code"`
 }
 
 func (ClientInitConfig) TableName() string {
