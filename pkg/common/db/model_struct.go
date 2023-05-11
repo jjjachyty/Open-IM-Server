@@ -379,11 +379,12 @@ func (RegisterAddFriend) TableName() string {
 }
 
 type ClientInitConfig struct {
-	DiscoverPageURL string `gorm:"column:discover_page_url;size:64" json:"version"`
-	AndroidVersion  string `gorm:"column:android_version" json:"android_version"`
-	IosVersion      string `gorm:"column:ios_version" json:"ios_version"`
-	AdnroidURL      string `gorm:"column:android_url" json:"android_url"`
-	IosURL          string `gorm:"column:ios_url" json:"ios_url"`
+	DiscoverPageURL    string `gorm:"column:discover_page_url;size:64" json:"version"`
+	AndroidVersion     string `gorm:"column:android_version" json:"android_version"`
+	IosVersion         string `gorm:"column:ios_version" json:"ios_version"`
+	AdnroidURL         string `gorm:"column:android_url" json:"android_url"`
+	IosURL             string `gorm:"column:ios_url" json:"ios_url"`
+	NeedInvitationCode string `gorm:"column:need_invitationCode" json:"need_invitationCode"`
 }
 
 func (ClientInitConfig) TableName() string {
