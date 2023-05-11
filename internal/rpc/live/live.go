@@ -112,6 +112,12 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 	if req.ChannelID == 0 || req.UserID == 0 {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
+	//获取用户信息
+	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", req.UserID))
+	if err != nil {
+		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+
 	//检查用户是否已有未结束的直播
 	live, err := imdb.GetUserLiving(fmt.Sprintf("%d", req.UserID))
 	if err != nil {
@@ -123,7 +129,6 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		log.NewError(req.OperationID, err)
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
-
 	if live != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
 	}
@@ -132,12 +137,6 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 	if err = rocksCache.CreateLiveRoom(*live); err != nil {
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
-	}
-
-	//获取用户信息
-	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", live.UserID))
-	if err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
