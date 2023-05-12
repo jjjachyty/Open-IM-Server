@@ -384,6 +384,7 @@ type ClientInitConfig struct {
 	IosVersion         string `gorm:"column:ios_version" json:"ios_version"`
 	AdnroidURL         string `gorm:"column:android_url" json:"android_url"`
 	IosURL             string `gorm:"column:ios_url" json:"ios_url"`
+	UpdateDescription  string `gorm:"column:update_description" json:"update_description"`
 	NeedInvitationCode int    `gorm:"column:need_invitation_code;size:8" json:"need_invitation_code"`
 }
 
