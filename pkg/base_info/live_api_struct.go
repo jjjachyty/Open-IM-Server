@@ -8,8 +8,8 @@ type JoinRoomReq struct {
 	OperationID string `json:"operationID" binding:"required"`
 	ChannelID   int64  `json:"channelID" binding:"required"`
 	UserID      int64  `json:"userID" binding:"required"`
-	NickName    string `json:"nickName" binding:"required"`
-	FaceURL     string `json:"faceURL" binding:"required"`
+	NickName    string `json:"nickName"`
+	FaceURL     string `json:"faceURL"`
 }
 type LiveCommonResp struct {
 	CommResp

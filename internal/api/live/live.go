@@ -43,11 +43,11 @@ func JoinLiveRoom(c *gin.Context) {
 	client := rpc.NewLiveClient(etcdConn)
 	RpcResp, err := client.JoinRoom(context.Background(), req)
 	if err != nil {
-		log.NewError(req.OperationID, "GetUserInfo failed ", err.Error(), req.String())
+		log.NewError(req.OperationID, "JoinLiveRoom failed ", err.Error(), req.String())
 		c.JSON(http.StatusInternalServerError, gin.H{"errCode": 500, "errMsg": "call  rpc server failed"})
 		return
 	}
-	log.NewInfo(req.OperationID, "GetUserInfo api return ", RpcResp)
+	log.NewInfo(req.OperationID, "JoinLiveRoom api return ", RpcResp)
 	data := jsonData.JsonDataList(RpcResp.UserLive)
 	data[1] = jsonData.JsonDataList(RpcResp.Owner)[0]
 	data[2] = jsonData.JsonDataList(RpcResp.RtcToken)[0]
