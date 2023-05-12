@@ -10,7 +10,7 @@ func init() {
 
 func GetUserLiving(userID string) (*db.UserLive, error) {
 	var live db.UserLive
-	err := db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("user_id=? and en_at is null", userID).Find(&live).Error
+	err := db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("user_id=? and end_at is null", userID).Find(&live).Error
 	if err != nil {
 		return nil, err
 	}
