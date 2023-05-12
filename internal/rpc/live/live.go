@@ -34,7 +34,7 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询直播信息出错"}}, nil
 	}
 
-	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%s", liveInfo.UserID))
+	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", liveInfo.UserID))
 	if err != nil {
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询主播信息出错"}}, nil
 	}
@@ -43,6 +43,9 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 
 	promePkg.PromeInc(promePkg.LiveUserCounter)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ")
+	if err = rocksCache.JoinLiveRoom(req.ChannelID, req.UserID, req.NickName, req.FaceURL, false); err != nil {
+		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "加入房间出错"}}, nil
+	}
 
 	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
 	if err != nil {
