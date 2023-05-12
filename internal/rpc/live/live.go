@@ -44,7 +44,13 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 	promePkg.PromeInc(promePkg.LiveUserCounter)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ")
 
-	return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{}, UserLive: respUserLiveInfo, Owner: &pblive.LiveUserInfo{UserID: liveInfo.UserID, NickName: user.Nickname, FaceURL: user.FaceURL}}, nil
+	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
+	if err != nil {
+		log.NewError(req.OperationID, err)
+		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
+
+	return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{}, UserLive: respUserLiveInfo, Owner: &pblive.LiveUserInfo{UserID: liveInfo.UserID, NickName: user.Nickname, FaceURL: user.FaceURL}, RtcToken: token}, nil
 }
 
 func (rpc *rpcLive) GetRoomUser(_ context.Context, req *pblive.GetRoomUserReq) (*pblive.GetRoomUserResp, error) {

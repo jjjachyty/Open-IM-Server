@@ -50,6 +50,7 @@ func JoinLiveRoom(c *gin.Context) {
 	log.NewInfo(req.OperationID, "GetUserInfo api return ", RpcResp)
 	data := jsonData.JsonDataList(RpcResp.UserLive)
 	data[1] = jsonData.JsonDataList(RpcResp.Owner)[0]
+	data[2] = jsonData.JsonDataList(RpcResp.RtcToken)[0]
 	c.JSON(http.StatusOK, api.LiveCommonResp{Data: data})
 }
 func LevelLiveRoom(c *gin.Context) {

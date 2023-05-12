@@ -28,6 +28,7 @@ message JoinRoomResp{
   CommonResp  CommonResp = 1;
   server_api_params.UserLive userLive = 2;
   LiveUserInfo  owner = 3;
+  string rtcToken=4;
 }
 
 message LeveRoomReq{
