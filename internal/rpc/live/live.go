@@ -48,7 +48,7 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 	utils.CopyStructFields(&respUserLiveInfo, liveInfo)
 
 	promePkg.PromeInc(promePkg.LiveUserCounter)
-	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ")
+	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ", respUserLiveInfo.String())
 
 	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
 	if err != nil {
