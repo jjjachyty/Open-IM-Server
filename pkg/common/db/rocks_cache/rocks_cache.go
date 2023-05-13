@@ -429,7 +429,7 @@ func GetLiveRoomFromCache(channelID int64) (*db.UserLive, error) {
 		return nil, err
 	}
 	var user = &db.UserLive{}
-	if err := mapstructure.Decode(rt, &user); err != nil {
+	if err := mapstructure.Decode(rt, user); err != nil {
 		fmt.Println(err)
 	}
 	return user, utils.Wrap(err, "")
