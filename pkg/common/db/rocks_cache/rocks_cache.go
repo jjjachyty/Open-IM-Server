@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"github.com/fatih/structs"
-	"github.com/mitchellh/mapstructure"
 )
 
 const (
@@ -424,12 +423,9 @@ func CreateLiveRoom(live db.UserLive) error {
 	return utils.Wrap(err, "")
 }
 func GetLiveRoomFromCache(channelID int64) (*db.UserLive, error) {
-	rt, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID)).Result()
-	if err != nil {
-		return nil, err
-	}
 	var user = &db.UserLive{}
-	if err := mapstructure.Decode(rt, user); err != nil {
+	err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID)).Scan(user)
+	if err != nil {
 		return nil, err
 	}
 	return user, utils.Wrap(err, "")

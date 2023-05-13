@@ -186,17 +186,17 @@ type User struct {
 }
 
 type UserLive struct {
-	UserID      int64  `gorm:"column:user_id;size:64"`                        //用户ID
-	GroupID     int64  `gorm:"column:group_id;type:char(128)" json:"groupID"` //群ID
-	StartAt     int64  `gorm:"column:start_at"`                               //开始时间
-	EndAt       int64  `gorm:"column:end_at"`                                 //结束时间
-	HostID      int64  `gorm:"column:host_id"`                                //主持人
-	TotalView   int64  `gorm:"column:total_view"`                             //总观看量
-	CurrentView int64  `gorm:"column:current_view"`                           //当前观看量
-	Duration    int32  `gorm:"column:duration"`                               //播放时长
-	ChannelID   int64  `gorm:"column:channel_id"`                             //直播ID
-	ChannelName string `gorm:"column:channel_name"`                           //直播名字
-	CreateAt    int64  `gorm:"column:create_at"`                              //创建时间
+	UserID      int64  `gorm:"column:user_id;size:64" redis:"UserID"`                         //用户ID
+	GroupID     int64  `gorm:"column:group_id;type:char(128)" json:"groupID" redis:"GroupID"` //群ID
+	StartAt     int64  `gorm:"column:start_at" redis:"StartAt"`                               //开始时间
+	EndAt       int64  `gorm:"column:end_at" redis:"EndAt"`                                   //结束时间
+	HostID      int64  `gorm:"column:host_id" redis:"HostID"`                                 //主持人
+	TotalView   int64  `gorm:"column:total_view" redis:"TotalView"`                           //总观看量
+	CurrentView int64  `gorm:"column:current_view" redis:"CurrentView"`                       //当前观看量
+	Duration    int32  `gorm:"column:duration" redis:"Duration"`                              //播放时长
+	ChannelID   int64  `gorm:"column:channel_id" redis:"ChannelID"`                           //直播ID
+	ChannelName string `gorm:"column:channel_name" redis:"ChannelName"`                       //直播名字
+	CreateAt    int64  `gorm:"column:create_at" redis:"CreateAt"`                             //创建时间
 }
 
 func (UserLive) TableName() string {
