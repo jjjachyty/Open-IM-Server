@@ -440,10 +440,10 @@ func JoinLiveRoom(channelID int64, userID int64, nickName string, faceURL string
 		return utils.Wrap(err, "")
 	}
 
-	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "total_view", 1).Err(); err != nil {
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "TotalView", 1).Err(); err != nil {
 		return utils.Wrap(err, "更新总观看人数失败")
 	}
-	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "current_view", 1).Err(); err != nil {
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "CurrentView", 1).Err(); err != nil {
 		return utils.Wrap(err, "更新当前观看人数失败")
 	}
 
@@ -464,10 +464,10 @@ func LevelLiveRoom(channelID int64, userID int64) error {
 	if err != nil {
 		return utils.Wrap(err, "")
 	}
-	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "total_view", -1).Err(); err != nil {
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "TotalView", -1).Err(); err != nil {
 		return utils.Wrap(err, "更新总观看人数失败")
 	}
-	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "current_view", -1).Err(); err != nil {
+	if err = db.DB.RDB.HIncrBy(context.Background(), fmt.Sprintf("%s%d", liveCache, channelID), "CurrentView", -1).Err(); err != nil {
 		return utils.Wrap(err, "更新当前观看人数失败")
 	}
 	return utils.Wrap(err, "")
