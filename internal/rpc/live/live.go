@@ -50,7 +50,7 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 	promePkg.PromeInc(promePkg.LiveUserCounter)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ", respUserLiveInfo.String())
 
-	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
+	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
 	if err != nil {
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), " GenerateRtcToken error ", err.Error())
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
@@ -69,9 +69,8 @@ func (rpc *rpcLive) GetRoomUser(_ context.Context, req *pblive.GetRoomUserReq) (
 
 	resp := make([]*pblive.LiveUserInfo, 0)
 	for k, v := range liveUsers {
-		userID, _ := strconv.ParseInt(k, 0, 64)
 		nickName, faceURL := rocksCache.GetLiveUsersValues(v)
-		resp = append(resp, &pblive.LiveUserInfo{UserID: userID, NickName: nickName, FaceURL: faceURL})
+		resp = append(resp, &pblive.LiveUserInfo{UserID: k, NickName: nickName, FaceURL: faceURL})
 	}
 	//不足100个 查询机器人补充
 	if len(liveUsers) < 100 {
@@ -80,9 +79,8 @@ func (rpc *rpcLive) GetRoomUser(_ context.Context, req *pblive.GetRoomUserReq) (
 			return &pblive.GetRoomUserResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询直播信息出错"}}, nil
 		}
 		for k, v := range liveUsers {
-			userID, _ := strconv.ParseInt(k, 0, 64)
 			nickName, faceURL := rocksCache.GetLiveUsersValues(v)
-			resp = append(resp, &pblive.LiveUserInfo{UserID: userID, NickName: nickName, FaceURL: faceURL})
+			resp = append(resp, &pblive.LiveUserInfo{UserID: k, NickName: nickName, FaceURL: faceURL})
 		}
 	}
 	promePkg.PromeInc(promePkg.LiveUserCounter)
@@ -121,7 +119,7 @@ func (s *rpcLive) GetLiveByUserID(ctx context.Context, req *pblive.GetLiveByUser
 
 func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp *pblive.StartLiveResp, err error) {
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
-	if req.ChannelID == 0 || req.UserID == 0 {
+	if req.ChannelID == "" || req.UserID == "" {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
 	//获取用户信息
@@ -136,7 +134,7 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
-	token, err := utils.GenerateRtcToken(uint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
+	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
 	if err != nil {
 		log.NewError(req.OperationID, err)
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
@@ -175,7 +173,7 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 
 func (s *rpcLive) CloseLive(ctx context.Context, req *pblive.CloseLiveReq) (resp *pblive.CloseLiveResp, err error) {
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), "req: ", req.String())
-	if req.ChannelID == 0 || req.UserID == 0 {
+	if req.ChannelID == "" || req.UserID == "" {
 		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
 
@@ -198,7 +196,7 @@ func (s *rpcLive) CloseLive(ctx context.Context, req *pblive.CloseLiveReq) (resp
 		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
-	if err := s.sendCloseMsg(req.OperationID, fmt.Sprintf("%d", req.UserID), req.ChannelID); err != nil {
+	if err := s.sendCloseMsg(req.OperationID, req.UserID, req.ChannelID); err != nil {
 		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 

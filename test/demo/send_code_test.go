@@ -14,7 +14,7 @@ func init() {
 
 func TestSendVerificationCode(t *testing.T) {
 
-	liveInfo, err := rocksCache.GetLiveRoomFromCache(3817720326)
+	liveInfo, err := rocksCache.GetLiveRoomFromCache("3817720326")
 	if err != nil {
 		panic(err)
 	}

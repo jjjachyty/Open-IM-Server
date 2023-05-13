@@ -23,8 +23,8 @@ func JoinLiveRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"errCode": http.StatusBadRequest, "errMsg": err.Error()})
 		return
 	}
-	if params.UserID == 0 {
-		params.UserID = time.Now().Unix()
+	if params.UserID == "" {
+		params.UserID = utils.Int64ToString(time.Now().Unix())
 		params.NickName = "游客"
 		params.FaceURL = ""
 	}

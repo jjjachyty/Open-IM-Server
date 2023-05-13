@@ -6,8 +6,8 @@ import (
 
 type JoinRoomReq struct {
 	OperationID string `json:"operationID" binding:"required"`
-	ChannelID   int64  `json:"channelID" binding:"required"`
-	UserID      int64  `json:"userID" binding:"required"`
+	ChannelID   string `json:"channelID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
 	NickName    string `json:"nickName"`
 	FaceURL     string `json:"faceURL"`
 }
@@ -17,27 +17,27 @@ type LiveCommonResp struct {
 }
 type LevelLiveRoomreq struct {
 	OperationID string `json:"operationID" binding:"required"`
-	ChannelID   int64  `json:"channelID" binding:"required"`
-	UserID      int64  `json:"userID" binding:"required"`
+	ChannelID   string `json:"channelID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
 }
 
 type StartLiveReq struct {
 	OperationID string `json:"operationID" binding:"required"`
-	ChannelID   int64  `json:"channelID" binding:"required"`
-	UserID      int64  `json:"userID" binding:"required"`
+	ChannelID   string `json:"channelID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
 	Platform    int    `json:"platform"`
 }
 
 type CloseLiveReq struct {
 	OperationID string `json:"operationID" binding:"required"`
-	ChannelID   int64  `json:"channelID" binding:"required"`
-	UserID      int64  `json:"userID" binding:"required"`
+	ChannelID   string `json:"channelID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
 }
 
 type LiveRoomUsersReq struct {
 	OperationID string `json:"operationID" binding:"required"`
-	ChannelID   int64  `json:"channelID" binding:"required"`
-	UserID      int64  `json:"userID" binding:"required"`
+	ChannelID   string `json:"channelID" binding:"required"`
+	UserID      string `json:"userID" binding:"required"`
 }
 type LiveRoomUsersResp struct {
 	CommResp

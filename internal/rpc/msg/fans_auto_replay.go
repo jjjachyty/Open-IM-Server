@@ -8,7 +8,6 @@ import (
 	sdk_ws "Open_IM/pkg/proto/sdk_ws"
 	"Open_IM/pkg/utils"
 	"math/rand"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -21,15 +20,13 @@ func (rpc *rpcChat) liveFansAutoReply(msgData *sdk_ws.MsgData, members []string)
 	// 	log.Error("获取用户信息出错", err)
 	// 	return
 	// }
-	sendID, _ := strconv.ParseInt(msgData.SendID, 0, 64)
-	channelID, _ := strconv.ParseInt(msgData.GroupID, 0, 64)
-	robots, err := rocksCache.GetLiveRobotsFromCache(channelID)
+	robots, err := rocksCache.GetLiveRobotsFromCache(msgData.LiveID)
 	if err != nil {
 		log.Error("随机获取机器人出错", err)
 		return
 	}
 
-	is, err := rocksCache.IsLiveAtmosphereUser(channelID, sendID)
+	is, err := rocksCache.IsLiveAtmosphereUser(msgData.LiveID, msgData.SendID)
 	if err != nil {
 		log.Error("检测是否是氛围组出错", err)
 		return

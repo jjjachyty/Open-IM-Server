@@ -26,7 +26,7 @@ func GetLiveByUserID(userID string) (*db.UserLive, error) {
 	return &live, nil
 }
 
-func GetLiveByChannelID(channelID int64) (*db.UserLive, error) {
+func GetLiveByChannelID(channelID string) (*db.UserLive, error) {
 	var live db.UserLive
 	err := db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("channel_id=?", channelID).Find(&live).Error
 	if err != nil {

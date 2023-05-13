@@ -11,7 +11,7 @@ message CommonResp{
 }
 
 message LiveUserInfo{
-  int64 UserID = 1;
+  string UserID = 1;
   string nickName = 2;
   string faceURL = 3;
   int32 role = 4;
@@ -19,8 +19,8 @@ message LiveUserInfo{
 
 message JoinRoomReq{
   string operationID = 1;
-  int64 channelID = 2;
-  int64 userID = 3;
+  string channelID = 2;
+  string userID = 3;
   string nickName= 4;
   string faceURL=5;
 }
@@ -33,12 +33,12 @@ message JoinRoomResp{
 
 message LeveRoomReq{
   string operationID = 1;
-  int64 channelID = 2;
-  int64 userID = 3;
+  string channelID = 2;
+  string userID = 3;
 }
 message GetRoomUserReq{
   string operationID = 1;
-  int64 channelID = 2;
+  string channelID = 2;
 }
 message GetRoomUserResp{
   CommonResp  CommonResp = 1;
@@ -54,8 +54,8 @@ message GetLiveByUserIDReq{
 }
 message CloseLiveReq{
   string operationID = 1;
-  int64 userID = 2;
-  int64 channelID = 3;
+  string userID = 2;
+  string channelID = 3;
 }
 
 message CloseLiveResp{
@@ -68,9 +68,9 @@ message GetLiveByUserIDResp{
 }
 message StartLiveReq{
   string operationID = 1;
-  int64 userID = 2;
-  int64 groupID = 3;
-  int64 channelID = 4;
+  string userID = 2;
+  string groupID = 3;
+  string channelID = 4;
   string channelName = 5;
 }
 message StartLiveResp{

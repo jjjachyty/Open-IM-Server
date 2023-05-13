@@ -9,14 +9,13 @@ import (
 	open_im_sdk "Open_IM/pkg/proto/sdk_ws"
 	"Open_IM/pkg/utils"
 	"context"
-	"encoding/binary"
 	"errors"
 	"strings"
 )
 
-func (rpc *rpcLive) sendCloseMsg(operationID string, sendID string, channelID int64) error {
-	content := make([]byte, 4)
-	binary.LittleEndian.PutUint64(content, uint64(channelID))
+func (rpc *rpcLive) sendCloseMsg(operationID string, sendID string, channelID string) error {
+	// content := make([]byte, 4)
+	// binary.LittleEndian.PutUint64(content, uint64(channelID))
 
 	pbData := msg.SendMsgReq{
 		OperationID: operationID,
@@ -27,7 +26,7 @@ func (rpc *rpcLive) sendCloseMsg(operationID string, sendID string, channelID in
 			SessionType:      constant.LiveChatType,
 			MsgFrom:          constant.SysMsgType,
 			ContentType:      constant.CloseLivingNotification,
-			Content:          content,
+			Content:          []byte(channelID),
 			CreateTime:       utils.GetCurrentTimestampByMill(),
 		},
 	}
