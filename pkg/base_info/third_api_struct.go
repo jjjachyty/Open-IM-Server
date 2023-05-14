@@ -63,7 +63,7 @@ type GetDownloadURLResp struct {
 		FileURL       string `json:"fileURL"`
 		YamlURL       string `json:"yamlURL"`
 		Version       string `json:"version"`
-		UpdateLog     string `json:"update_log"`
+		UpdateLog     string `json:"updateLog"`
 	} `json:"data"`
 }
 
