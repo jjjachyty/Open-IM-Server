@@ -10,7 +10,7 @@ func init() {
 
 func GetUserLiving(userID string) (*db.UserLive, error) {
 	var live db.UserLive
-	err := db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("user_id=? and end_at is null", userID).Find(&live).Error
+	err := db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("user_id=? and end_at is null", userID).Take(&live).Error
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +39,6 @@ func CreateLiveInfo(live *db.UserLive) error {
 	return db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Create(live).Error
 }
 
-func UpdateLiveInfo(user db.UserLive) error {
-	return db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("user_id=?", user.UserID).Updates(&user).Error
+func UpdateLiveInfo(live db.UserLive) error {
+	return db.DB.MysqlDB.DefaultGormDB().Model(db.UserLive{}).Where("channel_id=?", live.ChannelID).Updates(&live).Error
 }

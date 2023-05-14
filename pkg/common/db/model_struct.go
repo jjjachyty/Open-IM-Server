@@ -194,8 +194,8 @@ type UserLive struct {
 	TotalView   int64  `gorm:"column:total_view" redis:"TotalView"`                           //总观看量
 	CurrentView int64  `gorm:"column:current_view" redis:"CurrentView"`                       //当前观看量
 	Duration    int32  `gorm:"column:duration" redis:"Duration"`                              //播放时长
-	ChannelID   string `gorm:"column:channel_id" redis:"ChannelID"`                           //直播ID
-	ChannelName string `gorm:"column:channel_name" redis:"ChannelName"`                       //直播名字
+	ChannelID   string `gorm:"column:channel_id;size:255" redis:"ChannelID"`                  //直播ID
+	ChannelName string `gorm:"column:channel_name;size:255" redis:"ChannelName"`              //直播名字
 	CreateAt    int64  `gorm:"column:create_at" redis:"CreateAt"`                             //创建时间
 }
 

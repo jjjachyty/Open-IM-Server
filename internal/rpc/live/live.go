@@ -6,6 +6,7 @@ import (
 	imdb "Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	rocksCache "Open_IM/pkg/common/db/rocks_cache"
 	"Open_IM/pkg/common/log"
+	"errors"
 
 	promePkg "Open_IM/pkg/common/prometheus"
 	"Open_IM/pkg/grpc-etcdv3/getcdv3"
@@ -18,6 +19,7 @@ import (
 	"time"
 
 	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"gorm.io/gorm"
 
 	"Open_IM/pkg/common/config"
 	sdkws "Open_IM/pkg/proto/sdk_ws"
@@ -121,6 +123,8 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 	if req.ChannelID == "" || req.UserID == "" {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
+
+	//检查直播是否已存在
 	//获取用户信息
 	user, err := rocksCache.GetUserInfoFromCache(req.UserID)
 	if err != nil {
@@ -129,7 +133,7 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 
 	//检查用户是否已有未结束的直播
 	live, err := imdb.GetUserLiving(req.UserID)
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
@@ -142,26 +146,19 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
 	}
 	live = &db.UserLive{UserID: req.UserID, GroupID: req.GroupID, ChannelID: req.ChannelID, ChannelName: req.ChannelName, StartAt: time.Now().Unix()}
-	if err := imdb.CreateLiveInfo(live); err != nil {
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
-	}
-	if err = rocksCache.CreateLiveRoom(*live); err != nil {
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
-	}
+	if !rocksCache.CheckLiveExits(req.ChannelID) {
 
+		if err = imdb.CreateLiveInfo(live); err != nil {
+			return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+		}
+		if err = rocksCache.CreateLiveRoom(*live); err != nil {
+			return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+		}
+	}
 	if user.LeftDuration <= 1 {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "剩余分钟不足1分钟"}}, err
 	}
 
-	in, err := rocksCache.UserInRoom(live.ChannelID, live.UserID)
-	if err != nil {
-		log.NewError(req.OperationID, err)
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
-
-	}
-	if in {
-		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{}, RtcToken: token}, err
-	}
 	//加入房间
 	if err = rocksCache.JoinLiveRoom(live.ChannelID, live.UserID, user.Nickname, user.FaceURL, false); err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
@@ -183,7 +180,7 @@ func (s *rpcLive) CloseLive(ctx context.Context, req *pblive.CloseLiveReq) (resp
 	}
 
 	if liveInfo.UserID != req.UserID {
-		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "您暂时不能关闭直播"}}, err
+		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "您不能关闭直播"}}, err
 	}
 
 	//清理房间
@@ -194,7 +191,10 @@ func (s *rpcLive) CloseLive(ctx context.Context, req *pblive.CloseLiveReq) (resp
 	if err = imdb.UpdateUserLeftDuration(req.UserID, (time.Now().Unix()-liveInfo.StartAt)/60); err != nil {
 		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
-
+	//更新直播计时器
+	if err = imdb.UpdateLiveInfo(db.UserLive{ChannelID: req.ChannelID, EndAt: time.Now().Unix(), TotalView: liveInfo.TotalView, CurrentView: liveInfo.CurrentView}); err != nil {
+		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
+	}
 	if err := s.sendCloseMsg(req.OperationID, req.UserID, req.ChannelID); err != nil {
 		return &pblive.CloseLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}

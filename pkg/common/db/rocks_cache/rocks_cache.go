@@ -349,6 +349,16 @@ func GetLiveInfoFromCache(channelID string) (*db.UserLive, error) {
 	err = json.Unmarshal([]byte(groupLiveStr), liveInfo)
 	return liveInfo, utils.Wrap(err, "")
 }
+
+func CheckLiveExits(channelID string) bool {
+
+	count, err := db.DB.RDB.Exists(context.Background(), liveCache+channelID).Result()
+	if err != nil {
+		log.NewError("checkLiveExits has error", err.Error())
+		return false
+	}
+	return count > 0
+}
 func GetLiveAtmosphereCache(channelID int64) {
 
 }
@@ -419,7 +429,7 @@ func IsLiveAtmosphereUser(channelID string, userID string) (bool, error) {
 
 func CreateLiveRoom(live db.UserLive) error {
 	m := structs.Map(live)
-	err := db.DB.RDB.HSet(context.Background(), liveCache+live.ChannelID, m).Err()
+	err := db.DB.RDB.HMSet(context.Background(), liveCache+live.ChannelID, m).Err()
 	return utils.Wrap(err, "")
 }
 func GetLiveRoomFromCache(channelID string) (*db.UserLive, error) {
@@ -435,7 +445,15 @@ func JoinLiveRoom(channelID string, userID string, nickName string, faceURL stri
 	if isRoot {
 		prefixKey = liveRobotCache
 	}
-	err := db.DB.RDB.HMSet(context.Background(), prefixKey+channelID, userID, fmt.Sprintf("%s,%s", nickName, faceURL)).Err()
+	in, err := UserInRoom(channelID, userID)
+	if err != nil {
+		return utils.Wrap(err, "")
+	}
+	if in {
+		return nil
+	}
+
+	err = db.DB.RDB.HMSet(context.Background(), prefixKey+channelID, userID, fmt.Sprintf("%s,%s", nickName, faceURL)).Err()
 	if err != nil {
 		return utils.Wrap(err, "")
 	}
@@ -460,16 +478,18 @@ func UserInRoom(channelID string, userID string) (bool, error) {
 }
 func LevelLiveRoom(channelID string, userID string) error {
 	prefixKey := liveMemberCache
-	err := db.DB.RDB.HDel(context.Background(), prefixKey+channelID, userID).Err()
+	in, err := UserInRoom(channelID, userID)
 	if err != nil {
 		return utils.Wrap(err, "")
 	}
-	if err = db.DB.RDB.HIncrBy(context.Background(), liveCache+channelID, "TotalView", -1).Err(); err != nil {
-		return utils.Wrap(err, "更新总观看人数失败")
+	if !in {
+		return nil
 	}
-	if err = db.DB.RDB.HIncrBy(context.Background(), liveCache+channelID, "CurrentView", -1).Err(); err != nil {
-		return utils.Wrap(err, "更新当前观看人数失败")
+	err = db.DB.RDB.HDel(context.Background(), prefixKey+channelID, userID).Err()
+	if err != nil {
+		return utils.Wrap(err, "")
 	}
+
 	return utils.Wrap(err, "")
 }
 
