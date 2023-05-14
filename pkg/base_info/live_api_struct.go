@@ -5,9 +5,9 @@ import (
 )
 
 type JoinRoomReq struct {
-	OperationID string `json:"operationID" binding:"required"`
+	OperationID string `json:"operationID" `
 	ChannelID   string `json:"channelID" binding:"required"`
-	UserID      string `json:"userID" binding:"required"`
+	UserID      string `json:"userID"`
 	NickName    string `json:"nickName"`
 	FaceURL     string `json:"faceURL"`
 }

@@ -12,7 +12,6 @@ import (
 	pblive "Open_IM/pkg/proto/live"
 	"Open_IM/pkg/utils"
 	"context"
-	"fmt"
 	"net"
 	"strconv"
 	"strings"
@@ -35,10 +34,10 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "GetLiveRoomFromCache err"}}, nil
 	}
 
-	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", liveInfo.UserID))
+	user, err := rocksCache.GetUserInfoFromCache(liveInfo.UserID)
 	if err != nil {
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), " GetUserInfoFromCache error ", err.Error())
-		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: fmt.Sprintf("查询主播信息出错%d", liveInfo.UserID)}}, nil
+		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询主播信息出错" + liveInfo.UserID}}, nil
 	}
 	if err = rocksCache.JoinLiveRoom(req.ChannelID, req.UserID, req.NickName, req.FaceURL, false); err != nil {
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), " JoinLiveRoom error ", err.Error())
@@ -50,7 +49,7 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 	promePkg.PromeInc(promePkg.LiveUserCounter)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ", respUserLiveInfo.String())
 
-	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
+	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), req.ChannelID, uint32(2*60*60), uint32(2*62*60), 2) //默认2小时
 	if err != nil {
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), " GenerateRtcToken error ", err.Error())
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
@@ -123,18 +122,18 @@ func (s *rpcLive) StartLive(ctx context.Context, req *pblive.StartLiveReq) (resp
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 400, ErrMsg: err.Error()}}, err
 	}
 	//获取用户信息
-	user, err := rocksCache.GetUserInfoFromCache(fmt.Sprintf("%d", req.UserID))
+	user, err := rocksCache.GetUserInfoFromCache(req.UserID)
 	if err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
 	//检查用户是否已有未结束的直播
-	live, err := imdb.GetUserLiving(fmt.Sprintf("%d", req.UserID))
+	live, err := imdb.GetUserLiving(req.UserID)
 	if err != nil {
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
 	}
 
-	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), fmt.Sprintf("%d", req.ChannelID), uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
+	token, err := utils.GenerateRtcToken(utils.StringToUint32(req.UserID), req.ChannelID, uint32(user.LeftDuration*60), uint32(user.LeftDuration*60), 1)
 	if err != nil {
 		log.NewError(req.OperationID, err)
 		return &pblive.StartLiveResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: err.Error()}}, err
