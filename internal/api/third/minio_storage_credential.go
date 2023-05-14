@@ -10,13 +10,14 @@ import (
 	_ "Open_IM/pkg/common/token_verify"
 	"Open_IM/pkg/utils"
 	"context"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	_ "github.com/minio/minio-go/v7"
 	cr "github.com/minio/minio-go/v7/pkg/credentials"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 // @Summary minio上传文件(web api)
@@ -262,7 +263,11 @@ func GetDownloadURL(c *gin.Context) {
 			if app.YamlName != "" {
 				resp.Data.YamlURL = config.Config.Credential.Minio.Endpoint + "/" + config.Config.Credential.Minio.AppBucket + "/" + app.YamlName
 			}
-			resp.Data.FileURL = config.Config.Credential.Minio.Endpoint + "/" + config.Config.Credential.Minio.AppBucket + "/" + app.FileName
+			if strings.Contains(app.FileName, "http") {
+				resp.Data.FileURL = app.FileName
+			} else {
+				resp.Data.FileURL = config.Config.Credential.Minio.Endpoint + "/" + config.Config.Credential.Minio.AppBucket + "/" + app.FileName
+			}
 			resp.Data.Version = app.Version
 			resp.Data.UpdateLog = app.UpdateLog
 			c.JSON(http.StatusOK, resp)
