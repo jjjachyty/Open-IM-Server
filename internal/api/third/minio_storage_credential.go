@@ -250,6 +250,9 @@ func GetDownloadURL(c *gin.Context) {
 	log.Debug(req.OperationID, utils.GetSelfFuncName(), "app: ", app)
 	if app != nil {
 		appVersion, err := version2Int(app.Version)
+		if err != nil {
+			log.NewError(req.OperationID, utils.GetSelfFuncName(), err.Error(), "req version", req.Version, "app version", app.Version)
+		}
 		reqVersion, err := version2Int(req.Version)
 		if err != nil {
 			log.NewError(req.OperationID, utils.GetSelfFuncName(), err.Error(), "req version", req.Version, "app version", app.Version)
@@ -257,7 +260,7 @@ func GetDownloadURL(c *gin.Context) {
 		log.NewDebug(req.OperationID, utils.GetSelfFuncName(), "req version:", reqVersion, "app version:", appVersion)
 		if appVersion > reqVersion && app.Version != "" {
 			resp.Data.HasNewVersion = true
-			if app.ForceUpdate == true {
+			if app.ForceUpdate {
 				resp.Data.ForceUpdate = true
 			}
 			if app.YamlName != "" {
