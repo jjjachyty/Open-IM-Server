@@ -35,6 +35,10 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 		log.NewError(req.OperationID, utils.GetSelfFuncName(), " GetLiveRoomFromCache error ", err.Error())
 		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "GetLiveRoomFromCache err"}}, nil
 	}
+	if liveInfo.ChannelID == "" {
+		log.NewError(req.OperationID, utils.GetSelfFuncName(), " GetLiveRoomFromCache 直播不存在 ", err.Error())
+		return &pblive.JoinRoomResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "直播不存在"}}, nil
+	}
 
 	user, err := rocksCache.GetUserInfoFromCache(liveInfo.UserID)
 	if err != nil {
