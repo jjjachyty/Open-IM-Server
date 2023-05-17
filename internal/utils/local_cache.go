@@ -22,7 +22,7 @@ var CacheGroupMemberUserIDList = make(map[string]*GroupMemberUserIDListHash, 0)
 var CacheGroupMtx sync.RWMutex
 
 // 先不缓存
-func GetliveMemberUserIDList(channelID int64, operationID string) (map[string]string, error) {
+func GetliveMemberUserIDList(channelID string, operationID string) (map[string]string, error) {
 	memberUserIDListRemote, err := GetLiveMemberUserIDListFromRemote(channelID, operationID)
 	if err != nil {
 		log.Error(operationID, "GetGroupMemberUserIDListFromRemote failed ", err.Error(), channelID)
@@ -91,7 +91,7 @@ func GetGroupMemberUserIDListFromRemote(groupID string, operationID string) ([]s
 	}
 	return cacheResp.UserIDList, nil
 }
-func GetLiveMemberUserIDListFromRemote(channelID int64, operationID string) (map[string]string, error) {
+func GetLiveMemberUserIDListFromRemote(channelID string, operationID string) (map[string]string, error) {
 	getLiveMemberIDListFromCacheReq := &pbCache.GetLiveMemberIDListFromCacheReq{OperationID: operationID, ChannelID: channelID}
 	etcdConn := getcdv3.GetDefaultConn(config.Config.Etcd.EtcdSchema, strings.Join(config.Config.Etcd.EtcdAddr, ","), config.Config.RpcRegisterName.OpenImCacheName, operationID)
 	if etcdConn == nil {

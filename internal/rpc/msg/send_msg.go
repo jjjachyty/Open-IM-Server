@@ -649,8 +649,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 			return returnMsg(&replay, pb, int32(callbackResp.ErrCode), callbackResp.ErrMsg, "", 0)
 		}
 		var memberUserIDList []string
-		channleID, _ := strconv.ParseInt(pb.MsgData.LiveID, 0, 64)
-		userIDList, err := utils2.GetliveMemberUserIDList(channleID, pb.OperationID)
+		userIDList, err := utils2.GetliveMemberUserIDList(pb.MsgData.LiveID, pb.OperationID)
 		if err != nil {
 			errMsg := pb.OperationID + err.Error()
 			log.NewError(pb.OperationID, errMsg)

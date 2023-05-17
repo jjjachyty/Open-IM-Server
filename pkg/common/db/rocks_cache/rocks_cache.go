@@ -359,11 +359,11 @@ func CheckLiveExits(channelID string) bool {
 	}
 	return count > 0
 }
-func GetLiveAtmosphereCache(channelID int64) {
+func GetLiveAtmosphereCache(channelID string) {
 
 }
-func GetLiveUsersFromCache(channelID int64) (map[string]string, error) {
-	userMap, err := db.DB.RDB.HGetAll(context.Background(), fmt.Sprintf("%s%d", liveMemberCache, channelID)).Result()
+func GetLiveUsersFromCache(channelID string) (map[string]string, error) {
+	userMap, err := db.DB.RDB.HGetAll(context.Background(), liveMemberCache+channelID).Result()
 	return userMap, utils.Wrap(err, "")
 }
 
@@ -374,7 +374,7 @@ func GetLiveUsersValues(value string) (nickName, faceURL string) {
 
 func GetLiveUsersLimitFromCache(channelID string, count int64) (map[string]string, error) {
 	userMap := make(map[string]string, 0)
-	key := fmt.Sprintf("%s%d", liveMemberCache, channelID)
+	key := liveMemberCache + channelID
 	iterator := db.DB.RDB.HScan(context.Background(), key, 0, "*", count).Iterator()
 	var values []interface{}
 	var err error
@@ -391,7 +391,7 @@ func GetLiveUsersLimitFromCache(channelID string, count int64) (map[string]strin
 
 func GetLiveRobotsLimitFromCache(channelID string, count int64) (map[string]string, error) {
 	userMap := make(map[string]string, 0)
-	key := fmt.Sprintf("%s%d", liveRobotCache, channelID)
+	key := liveRobotCache + channelID
 	iterator := db.DB.RDB.HScan(context.Background(), key, 0, "*", count).Iterator()
 	var values []interface{}
 	var err error
@@ -417,8 +417,8 @@ func AddLiveAtmosphere(channelID string, userID string) error {
 }
 
 // 氛围组
-func GetLiveAtmosphereFromCache(channelID int64) ([]string, error) {
-	userMap, err := db.DB.RDB.SMembers(context.Background(), fmt.Sprintf("%s%d", liveAtmosphereCache, channelID)).Result()
+func GetLiveAtmosphereFromCache(channelID string) ([]string, error) {
+	userMap, err := db.DB.RDB.SMembers(context.Background(), liveAtmosphereCache+channelID).Result()
 	return userMap, utils.Wrap(err, "")
 }
 

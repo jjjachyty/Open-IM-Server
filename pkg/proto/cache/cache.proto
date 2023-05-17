@@ -52,7 +52,7 @@ message GetGroupMemberIDListFromCacheReq {
 
 message GetLiveMemberIDListFromCacheReq{
   string operationID = 1;
-  int64 channelID = 2;
+  string channelID = 2;
 }
 
 message GetliveMemberIDListFromCacheResp {
