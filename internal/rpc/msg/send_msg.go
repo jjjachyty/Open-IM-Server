@@ -691,7 +691,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		if callbackResp.ErrCode != 0 {
 			log.NewError(pb.OperationID, utils.GetSelfFuncName(), "callbackAfterSendGroupMsg resp: ", callbackResp)
 		}
-		if !sendTag {
+		if !sendTag && len(memberUserIDList) > 0 { //有用户
 			log.NewWarn(pb.OperationID, "send tag is ", sendTag)
 			promePkg.PromeInc(promePkg.GroupChatMsgProcessFailedCounter)
 			return returnMsg(&replay, pb, 201, "kafka send msg err", "", 0)
