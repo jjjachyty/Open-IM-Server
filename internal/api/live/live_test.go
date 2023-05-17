@@ -24,7 +24,7 @@ func SetupRouter() *gin.Engine {
 func TestJoinLiveRoom(t *testing.T) {
 	router := SetupRouter()
 	w := httptest.NewRecorder()
-	params := api.JoinRoomReq{ChannelID: "3817720326"}
+	params := api.JoinRoomReq{ChannelID: "3817720326", UserID: "1910360909"}
 	paramsData, _ := json.Marshal(params)
 	req, _ := http.NewRequest(http.MethodPost, "/", bytes.NewReader(paramsData))
 	router.ServeHTTP(w, req)
