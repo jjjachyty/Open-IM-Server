@@ -1,6 +1,7 @@
 package live
 
 import (
+	jsonData "Open_IM/internal/utils"
 	api "Open_IM/pkg/base_info"
 	"Open_IM/pkg/common/config"
 	"Open_IM/pkg/common/log"
@@ -47,10 +48,10 @@ func JoinLiveRoom(c *gin.Context) {
 		return
 	}
 	log.NewInfo(req.OperationID, "JoinLiveRoom api return ", RpcResp)
-	// data := jsonData.JsonDataList(RpcResp.UserLive)
-	// data[1] = jsonData.JsonDataList(RpcResp.Owner)[0]
-	// data[2] = jsonData.JsonDataList(RpcResp.RtcToken)[0]
-	c.JSON(http.StatusOK, RpcResp)
+	data := jsonData.JsonDataList(RpcResp.UserLive)
+	data[1] = jsonData.JsonDataList(RpcResp.Owner)[0]
+	data[2] = jsonData.JsonDataList(RpcResp.RtcToken)[0]
+	c.JSON(http.StatusOK, api.LiveCommonResp{CommResp: api.CommResp{}, Data: data})
 }
 func LevelLiveRoom(c *gin.Context) {
 	params := api.LevelLiveRoomreq{}
