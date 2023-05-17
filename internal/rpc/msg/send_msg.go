@@ -655,7 +655,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 			log.NewError(pb.OperationID, errMsg)
 			return returnMsg(&replay, pb, int32(callbackResp.ErrCode), callbackResp.ErrMsg, "", 0)
 		}
-
+		log.NewWarn(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", pb.MsgData.SendID, userIDList)
 		if _, ok := userIDList[pb.MsgData.SendID]; !ok {
 			return returnMsg(&replay, pb, 202, "you are not in this living", "", 0)
 		}

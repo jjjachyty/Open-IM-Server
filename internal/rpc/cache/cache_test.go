@@ -13,5 +13,7 @@ func Test_cacheServer_GetLiveMemberIDListFromCache(t *testing.T) {
 
 	gotResp, err := cache.GetLiveMemberIDListFromCache(context.Background(), &pbCache.GetLiveMemberIDListFromCacheReq{ChannelID: "3817720326"})
 	fmt.Println(gotResp, err)
-
+	if _, ok := gotResp.UserIDList["1910360909"]; !ok {
+		panic("you are not in this living")
+	}
 }
