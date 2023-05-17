@@ -659,7 +659,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		if _, ok := userIDList[pb.MsgData.SendID]; !ok {
 			return returnMsg(&replay, pb, 202, "you are not in this living", "", 0)
 		}
-		log.Debug(pb.OperationID, "GetGroupAllMember userID list", memberUserIDList, "len: ", len(memberUserIDList))
+		log.Info(pb.OperationID, "GetGroupAllMember userID list", memberUserIDList, "len: ", len(memberUserIDList))
 
 		t1 = time.Now()
 
@@ -675,6 +675,8 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 			//	go rpc.sendMsgToGroup(v[i*split:(i+1)*split], *pb, k, &sendTag, &wg)
 			go rpc.sendMsgToLiveOptimization(memberUserIDList[i*split:(i+1)*split], tmp, constant.OnlineStatus, &sendTag, &wg)
 		}
+		log.Info(pb.OperationID, "remain", remain)
+
 		if remain > 0 {
 			wg.Add(1)
 			tmp := valueCopy(pb)
