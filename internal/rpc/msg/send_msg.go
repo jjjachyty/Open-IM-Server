@@ -662,7 +662,12 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 		log.Info(pb.OperationID, "GetGroupAllMember userID list", memberUserIDList, "len: ", len(memberUserIDList))
 
 		t1 = time.Now()
-
+		for k := range userIDList {
+			if k == pb.MsgData.SendID {
+				continue
+			}
+			memberUserIDList = append(memberUserIDList, k)
+		}
 		//split  parallel send
 		var wg sync.WaitGroup
 		var sendTag bool
@@ -675,7 +680,7 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 			//	go rpc.sendMsgToGroup(v[i*split:(i+1)*split], *pb, k, &sendTag, &wg)
 			go rpc.sendMsgToLiveOptimization(memberUserIDList[i*split:(i+1)*split], tmp, constant.OnlineStatus, &sendTag, &wg)
 		}
-		log.Info(pb.OperationID, "remain", remain)
+		log.Info(pb.OperationID, "remain", remain, "len: ", len(memberUserIDList))
 
 		if remain > 0 {
 			wg.Add(1)
