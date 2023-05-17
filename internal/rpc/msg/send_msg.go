@@ -1212,6 +1212,7 @@ func (rpc *rpcChat) sendMsgToGroup(list []string, pb pbChat.SendMsgReq, status s
 }
 
 func (rpc *rpcChat) sendMsgToLiveOptimization(list []string, groupPB *pbChat.SendMsgReq, status string, sendTag *bool, wg *sync.WaitGroup) {
+	log.NewInfo(">>>>>>>>>", "sendMsgToLiveOptimization", "list", list, "req", groupPB.String())
 	msgToMQGroup := pbChat.MsgDataToMQ{Token: groupPB.Token, OperationID: groupPB.OperationID, MsgData: groupPB.MsgData}
 
 	tempOptions := make(map[string]bool, 1)
