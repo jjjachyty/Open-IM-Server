@@ -673,13 +673,13 @@ func (rpc *rpcChat) SendMsg(_ context.Context, pb *pbChat.SendMsgReq) (*pbChat.S
 			wg.Add(1)
 			tmp := valueCopy(pb)
 			//	go rpc.sendMsgToGroup(v[i*split:(i+1)*split], *pb, k, &sendTag, &wg)
-			go rpc.sendMsgToGroupOptimization(memberUserIDList[i*split:(i+1)*split], tmp, constant.OnlineStatus, &sendTag, &wg)
+			go rpc.sendMsgToLiveOptimization(memberUserIDList[i*split:(i+1)*split], tmp, constant.OnlineStatus, &sendTag, &wg)
 		}
 		if remain > 0 {
 			wg.Add(1)
 			tmp := valueCopy(pb)
 			//	go rpc.sendMsgToGroup(v[split*(len(v)/split):], *pb, k, &sendTag, &wg)
-			go rpc.sendMsgToGroupOptimization(memberUserIDList[split*(len(memberUserIDList)/split):], tmp, constant.OnlineStatus, &sendTag, &wg)
+			go rpc.sendMsgToLiveOptimization(memberUserIDList[split*(len(memberUserIDList)/split):], tmp, constant.OnlineStatus, &sendTag, &wg)
 		}
 		wg.Wait()
 		log.Debug(pb.OperationID, "send msg cost time1 ", time.Since(t1), pb.MsgData.ClientMsgID)
@@ -1211,8 +1211,38 @@ func (rpc *rpcChat) sendMsgToGroup(list []string, pb pbChat.SendMsgReq, status s
 	wg.Done()
 }
 
+func (rpc *rpcChat) sendMsgToLiveOptimization(list []string, groupPB *pbChat.SendMsgReq, status string, sendTag *bool, wg *sync.WaitGroup) {
+	msgToMQGroup := pbChat.MsgDataToMQ{Token: groupPB.Token, OperationID: groupPB.OperationID, MsgData: groupPB.MsgData}
+
+	tempOptions := make(map[string]bool, 1)
+	for k, v := range groupPB.MsgData.Options {
+		tempOptions[k] = v
+	}
+	for _, v := range list {
+		groupPB.MsgData.RecvID = v
+		options := make(map[string]bool, 1)
+		for k, v := range tempOptions {
+			options[k] = v
+		}
+		groupPB.MsgData.Options = options
+
+		if v == "" || groupPB.MsgData.SendID == "" {
+			log.Error(msgToMQGroup.OperationID, "sendMsgToGroupOptimization userID nil ", msgToMQGroup.String())
+			continue
+		}
+		err := rpc.sendMsgToWriter(&msgToMQGroup, v, status)
+		if err != nil {
+			log.NewError(msgToMQGroup.OperationID, "kafka send msg err:UserId", v, msgToMQGroup.String())
+		} else {
+			*sendTag = true
+		}
+	}
+	wg.Done()
+}
+
 func (rpc *rpcChat) sendMsgToGroupOptimization(list []string, groupPB *pbChat.SendMsgReq, status string, sendTag *bool, wg *sync.WaitGroup) {
 	msgToMQGroup := pbChat.MsgDataToMQ{Token: groupPB.Token, OperationID: groupPB.OperationID, MsgData: groupPB.MsgData}
+
 	tempOptions := make(map[string]bool, 1)
 	for k, v := range groupPB.MsgData.Options {
 		tempOptions[k] = v

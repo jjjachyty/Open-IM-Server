@@ -66,7 +66,7 @@ func (rpc *rpcChat) liveFansAutoReply(msgData *sdk_ws.MsgData, members []string)
 				if end >= memberCount-1 {
 					end = memberCount - 1
 				}
-				go rpc.sendMsgToGroupOptimization(members[start:end], &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
+				go rpc.sendMsgToLiveOptimization(members[start:end], &msg.SendMsgReq{MsgData: &newMsg}, constant.OnlineStatus, &sendTag, &wg)
 			}
 		}
 		wg.Wait()
