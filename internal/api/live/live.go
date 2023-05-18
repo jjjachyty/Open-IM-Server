@@ -82,7 +82,7 @@ func LevelLiveRoom(c *gin.Context) {
 }
 func LiveRoomUsers(c *gin.Context) {
 	params := api.LiveRoomUsersReq{}
-	if err := c.BindQuery(&params); err != nil {
+	if err := c.BindJSON(&params); err != nil {
 		log.NewError("0", "BindJSON failed ", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"errCode": http.StatusBadRequest, "errMsg": err.Error()})
 		return

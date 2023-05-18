@@ -145,7 +145,7 @@ func main() {
 		liveGroup.POST("/level", apiLive.LevelLiveRoom) //1
 		liveGroup.POST("/start", apiLive.StartLive)     //1
 		liveGroup.POST("/close", apiLive.CLoseLive)     //1
-		liveGroup.GET("/users", apiLive.LiveRoomUsers)  //1
+		liveGroup.POST("/users", apiLive.LiveRoomUsers) //1
 	}
 	//Third service
 	thirdGroup := r.Group("/third")
