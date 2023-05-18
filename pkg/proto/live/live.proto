@@ -43,6 +43,7 @@ message GetRoomUserReq{
 message GetRoomUserResp{
   CommonResp  CommonResp = 1;
   repeated LiveUserInfo users= 2;
+  uint32 currentView = 3;
 }
 
 message LeveRoomResp{

@@ -67,6 +67,11 @@ func (rpc *rpcLive) JoinRoom(_ context.Context, req *pblive.JoinRoomReq) (*pbliv
 func (rpc *rpcLive) GetRoomUser(_ context.Context, req *pblive.GetRoomUserReq) (*pblive.GetRoomUserResp, error) {
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc args ", req.String())
 
+	liveInfo, err := rocksCache.GetLiveInfoFromCache(req.ChannelID)
+	if err != nil {
+		return &pblive.GetRoomUserResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询直播信息出错"}}, nil
+	}
+
 	liveUsers, err := rocksCache.GetLiveUsersLimitFromCache(req.ChannelID, 100)
 	if err != nil {
 		return &pblive.GetRoomUserResp{CommonResp: &pblive.CommonResp{ErrCode: 500, ErrMsg: "查询直播信息出错"}}, nil
@@ -91,7 +96,7 @@ func (rpc *rpcLive) GetRoomUser(_ context.Context, req *pblive.GetRoomUserReq) (
 	promePkg.PromeInc(promePkg.LiveUserCounter)
 	log.NewInfo(req.OperationID, utils.GetSelfFuncName(), " rpc return ")
 
-	return &pblive.GetRoomUserResp{CommonResp: &pblive.CommonResp{}, Users: resp}, nil
+	return &pblive.GetRoomUserResp{CommonResp: &pblive.CommonResp{}, Users: resp, CurrentView: uint32(liveInfo.CurrentView)}, nil
 }
 
 func (rpc *rpcLive) LeveRoom(_ context.Context, req *pblive.LeveRoomReq) (*pblive.LeveRoomResp, error) {
