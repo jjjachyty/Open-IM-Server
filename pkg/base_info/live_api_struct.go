@@ -37,7 +37,7 @@ type CloseLiveReq struct {
 type LiveRoomUsersReq struct {
 	OperationID string `json:"operationID" binding:"required"`
 	ChannelID   string `json:"channelID" binding:"required"`
-	UserID      string `json:"userID" binding:"required"`
+	UserID      string `json:"userID"`
 }
 type LiveRoomUsersResp struct {
 	CommResp
