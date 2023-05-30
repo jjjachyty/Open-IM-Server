@@ -13,7 +13,7 @@ func SendMail(subject, body string, to string) error {
 		return err
 	}
 	defer c.Close()
-	if err = c.Mail("mail"); err != nil {
+	if err = c.Mail("mail@push131.com"); err != nil {
 		return err
 	}
 
