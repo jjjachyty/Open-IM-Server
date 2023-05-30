@@ -20,3 +20,11 @@ func TestSendVerificationCode(t *testing.T) {
 	}
 	println(liveInfo.UserID)
 }
+func TestGetLiveUsersLimitFromCache(t *testing.T) {
+
+	users, err := rocksCache.GetLiveUsersLimitFromCache("3817720326", 100)
+	if err != nil {
+		panic(err)
+	}
+	println(users)
+}
