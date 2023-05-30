@@ -121,7 +121,7 @@ func SendVerificationCode(c *gin.Context) {
 		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
 		// 	return
 		// }
-		if err = SendMail("127.0.0.1:25", (&mail.Address{"push131", "mail@push131.com.com"}).String(), "验证码", "message body", []string{(&mail.Address{"to name", "1942056324@qq.com"}).String()}); err != nil {
+		if err = SendMail("127.0.0.1:25", (&mail.Address{"", "mail@push131.com.com"}).String(), "验证码", "message body", []string{(&mail.Address{"", "1942056324@qq.com"}).String()}); err != nil {
 			log.Error(params.OperationID, "send mail error", account, err.Error())
 			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
 			return
