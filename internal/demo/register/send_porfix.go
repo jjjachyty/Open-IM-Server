@@ -23,7 +23,7 @@ func SendMail(subject, body string, to string) error {
 	}
 
 	msg := "To: " + to + "\r\n" +
-		"From: " + "mail" + "\r\n" +
+		"From: " + "mail@push131.com" + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"Content-Type: text/html; charset=\"UTF-8\"\r\n" +
 		"Content-Transfer-Encoding: base64\r\n" +
