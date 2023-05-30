@@ -800,7 +800,7 @@ demo:
   useSuperCode: true
   mail: #仅支持qq邮箱，具体操作参考 https://service.mail.qq.com/cgi-bin/help?subtype=1&id=28&no=1001256 必须修改
     title: 验证码
-    senderMail: push131.com@hotmail.com
+    senderMail: mail@push131.com
     senderAuthorizationCode: push131@2023~^
     smtpAddr: smtp-mail.outlook.com
     smtpPort: 587     #需开放此端口 出口方向
