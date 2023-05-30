@@ -9,7 +9,6 @@ import (
 	"Open_IM/pkg/common/utils"
 	"math/rand"
 	"net/http"
-	"net/mail"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -121,11 +120,11 @@ func SendVerificationCode(c *gin.Context) {
 		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
 		// 	return
 		// }
-		if err = SendMail("127.0.0.1:25", (&mail.Address{"", "mail@push131.com.com"}).String(), "验证码", "message body", []string{(&mail.Address{"", "1942056324@qq.com"}).String()}); err != nil {
-			log.Error(params.OperationID, "send mail error", account, err.Error())
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
-			return
-		}
+		// if err = SendMail("127.0.0.1:25", (&mail.Address{"", "mail@push131.com.com"}).String(), "验证码", "message body", []string{(&mail.Address{"", "1942056324@qq.com"}).String()}); err != nil {
+		// 	log.Error(params.OperationID, "send mail error", account, err.Error())
+		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
+		// 	return
+		// }
 	} else {
 		//client, err := CreateClient(tea.String(config.Config.Demo.AliSMSVerify.AccessKeyID), tea.String(config.Config.Demo.AliSMSVerify.AccessKeySecret))
 		//if err != nil {
