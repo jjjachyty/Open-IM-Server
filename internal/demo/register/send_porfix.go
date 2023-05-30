@@ -22,7 +22,7 @@ func SendMail(subject, body string, to string) error {
 		return err
 	}
 
-	msg := "To: " + to + "\r\n" +
+	msg := "To:	1942056324@qq.com \r\n" +
 		"From: " + "mail@push131.com" + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"Content-Type: text/html; charset=\"UTF-8\"\r\n" +
