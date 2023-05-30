@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/gomail.v2"
 )
 
 var sms SMS
@@ -112,12 +111,17 @@ func SendVerificationCode(c *gin.Context) {
 	}
 	log.NewDebug(params.OperationID, config.Config.Demo)
 	if params.Email != "" {
-		m := gomail.NewMessage()
-		m.SetHeader(`From`, config.Config.Demo.Mail.SenderMail)
-		m.SetHeader(`To`, []string{account}...)
-		m.SetHeader(`Subject`, config.Config.Demo.Mail.Title)
-		m.SetBody(`text/html`, fmt.Sprintf("%d", code))
-		if err := gomail.NewDialer("127.0.0.1", 25, "", "").DialAndSend(m); err != nil {
+		// m := gomail.NewMessage()
+		// m.SetHeader(`From`, config.Config.Demo.Mail.SenderMail)
+		// m.SetHeader(`To`, []string{account}...)
+		// m.SetHeader(`Subject`, config.Config.Demo.Mail.Title)
+		// m.SetBody(`text/html`, fmt.Sprintf("%d", code))
+		// if err := gomail.NewDialer("127.0.0.1", 25, "", "").DialAndSend(m); err != nil {
+		// 	log.Error(params.OperationID, "send mail error", account, err.Error())
+		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
+		// 	return
+		// }
+		if err = SendMail(config.Config.Demo.Mail.Title, fmt.Sprintf("%d", code), account); err != nil {
 			log.Error(params.OperationID, "send mail error", account, err.Error())
 			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
 			return
