@@ -6,7 +6,7 @@ import (
 
 func TestSendMail(t *testing.T) {
 	// Sender data.
-
+	SendMail("429810818@qq.com", "", "验证码", "TEST", "429810818@qq.com")
 }
 
 // func SendMail(addr, from, subject, body string, to []string) error {

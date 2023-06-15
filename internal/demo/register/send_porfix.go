@@ -46,7 +46,7 @@ import (
 //		}
 //		return c.Quit()
 //	}
-func SendMail(addr, from, subject, body string, to []string) error {
+func SendMail(addr, from, subject, body string, to string) error {
 	cmd := exec.Command("echo", fmt.Sprintf(`echo %s | mail -s "验证码" %s`, body, to))
 	_, err := cmd.CombinedOutput()
 	return err
