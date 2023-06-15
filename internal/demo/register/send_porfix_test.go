@@ -2,15 +2,38 @@ package register
 
 import (
 	"fmt"
-	"net/mail"
+	"net/smtp"
 	"os/exec"
 	"testing"
 )
 
 func TestSendMail(t *testing.T) {
+	// Sender data.
+	from := "mail"
+	password := "pushimmail"
 
-	err := SendMail("127.0.0.1:25", (&mail.Address{"from name", "from@example.com"}).String(), "Email Subject", "message body", []string{(&mail.Address{"to name", "1942056324@qq.com"}).String()})
-	panic(err)
+	// Receiver email address.
+	to := []string{
+		"1942056324@qq.com",
+	}
+
+	// smtp server configuration.
+	smtpHost := "127.0.0.1"
+	smtpPort := "25"
+
+	// Message.
+	message := []byte("This is a test email message.")
+
+	// Authentication.
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	// Sending email.
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Email Sent Successfully!")
 }
 
 // func SendMail(addr, from, subject, body string, to []string) error {
