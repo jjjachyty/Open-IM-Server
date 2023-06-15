@@ -1,39 +1,12 @@
 package register
 
 import (
-	"fmt"
-	"net/smtp"
-	"os/exec"
 	"testing"
 )
 
 func TestSendMail(t *testing.T) {
 	// Sender data.
-	from := "mail"
-	password := "pushimmail"
 
-	// Receiver email address.
-	to := []string{
-		"1942056324@qq.com",
-	}
-
-	// smtp server configuration.
-	smtpHost := "127.0.0.1"
-	smtpPort := "25"
-
-	// Message.
-	message := []byte("This is a test email message.")
-
-	// Authentication.
-	auth := smtp.PlainAuth("", from, password, smtpHost)
-
-	// Sending email.
-	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("Email Sent Successfully!")
 }
 
 // func SendMail(addr, from, subject, body string, to []string) error {
@@ -76,8 +49,3 @@ func TestSendMail(t *testing.T) {
 //		}
 //		return c.Quit()
 //	}
-func SendMail(addr, from, subject, body string, to []string) error {
-	cmd := exec.Command("echo", fmt.Sprintf(`echo %s | mail -s "验证码" %s`, body, to))
-	_, err := cmd.CombinedOutput()
-	return err
-}
