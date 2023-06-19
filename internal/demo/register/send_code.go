@@ -7,7 +7,6 @@ import (
 	"Open_IM/pkg/common/db/mysql_model/im_mysql_model"
 	"Open_IM/pkg/common/log"
 	"Open_IM/pkg/common/utils"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -121,11 +120,11 @@ func SendVerificationCode(c *gin.Context) {
 		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
 		// 	return
 		// }
-		if err = SendMail("127.0.0.1:25", "mail@push131.com.com", "验证码", fmt.Sprintf("%d", code), account); err != nil {
-			log.Error(params.OperationID, "send mail error", account, err.Error())
-			c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
-			return
-		}
+		// if err = SendMail("127.0.0.1:25", "mail@push131.com.com", "验证码", fmt.Sprintf("%d", code), account); err != nil {
+		// 	log.Error(params.OperationID, "send mail error", account, err.Error())
+		// 	c.JSON(http.StatusOK, gin.H{"errCode": constant.MailSendCodeErr, "errMsg": "send mail error"})
+		// 	return
+		// }
 	} else {
 		//client, err := CreateClient(tea.String(config.Config.Demo.AliSMSVerify.AccessKeyID), tea.String(config.Config.Demo.AliSMSVerify.AccessKeySecret))
 		//if err != nil {
